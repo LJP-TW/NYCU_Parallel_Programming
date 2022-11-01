@@ -19,7 +19,6 @@ static inline void MT19937_twist(MT19937 *object)
 MT19937 *MT19937_init(void)
 {
     MT19937 *object;
-    ssize_t ret;
 
     object = malloc(sizeof(MT19937));
 
@@ -44,8 +43,8 @@ u32 MT19937_rand(MT19937 *object)
 
     ret = object->mt[object->mti];
     ret = ret ^ ret >> 11;
-    ret = ret ^ ret << 7 & 0x9d2c5680;
-    ret = ret ^ ret << 15 & 0xefc60000;
+    ret = ret ^ (ret << 7 & 0x9d2c5680);
+    ret = ret ^ (ret << 15 & 0xefc60000);
     ret = ret ^ ret >> 18;
     object->mti = (object->mti + 1) % 624;
 
