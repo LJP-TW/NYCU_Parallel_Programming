@@ -1,0 +1,5 @@
+Model name:                      AMD Ryzen 7 PRO 4750U with Radeon Graphics
+cpu MHz		: 1696.813
+cpu MHz		: 1696.813
+cpu MHz		: 1696.813
+cpu MHz		: 1696.813
