@@ -18,6 +18,6 @@ clean:
 
 .PHONY: report
 report: $(TARGET)
-	lscpu | grep name > cpu.txt
+	lscpu | grep -E "name|Flags" > cpu.txt
 	cat /proc/cpuinfo | grep MHz >> cpu.txt
 	bash -c "{ time (./pi.out 3 100000000; ./pi.out 4 100000000) >result.txt ; } 2>time.txt"
