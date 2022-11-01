@@ -1,13 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <fcntl.h>
 #include <pthread.h>
-#include "MT19937.h"
+#include <sys/random.h>
+#include "shishua-avx2.h"
 
 #define U32_MAX 0xffffffff
 
-typedef unsigned long long int u64;
+typedef unsigned long u64;
+typedef unsigned int u32;
 typedef long long int s64;
 
 s64 hit;
@@ -15,9 +16,28 @@ pthread_mutex_t hit_mutex = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
 
 // Mersenne Twister PRNG
 
-double get_rand(MT19937 *prng, double min, double max)
+static inline void rand_init(prng_state *prng)
 {
-    return min + ((double)MT19937_rand(prng) / U32_MAX) * (max - min);
+    u64 seed[4];
+    ssize_t ret;
+    
+    ret = getrandom(seed, sizeof(seed), 0);
+
+    if (ret < 0) {
+        fprintf(stderr, "getrandom failed\n");
+        exit(0);
+    }
+
+    prng_init(prng, seed);
+}
+
+double get_rand(prng_state *prng, double min, double max)
+{
+    uint8_t buf[0x80] __attribute__ ((aligned (64)));
+    
+    prng_gen(prng, buf, sizeof(buf));
+
+    return min + ((double)(*((u32 *)buf)) / U32_MAX) * (max - min);
 }
 
 void add_hit(int value)
@@ -33,11 +53,13 @@ void *tf_estimate_pi(void *_toss_cnt)
 {
     s64 toss_cnt = (s64)_toss_cnt;
     s64 _hit = 0;
-    MT19937 *prng = MT19937_init();
+    prng_state prng;
+
+    rand_init(&prng);
     
     for (s64 i = 0; i < toss_cnt; i++) {
-        double x = get_rand(prng, -1, 1);
-        double y = get_rand(prng, -1, 1);
+        double x = get_rand(&prng, -1, 1);
+        double y = get_rand(&prng, -1, 1);
         double distance = x * x + y * y;
         if (distance <= 1)
             _hit++;
