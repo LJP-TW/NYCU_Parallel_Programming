@@ -44,6 +44,8 @@ void *tf_estimate_pi(void *_toss_cnt)
     }
 
     add_hit(_hit);
+
+    return NULL;
 }
 
 /*
