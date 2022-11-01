@@ -1,15 +1,19 @@
 TARGET := pi.out
 
+CC := clang
+
 C_FILES = $(wildcard *.c)
 O_FILES = $(C_FILES:%.c=%.o)
+
+CXXFLAGS := -O3 -mavx2 -ffast-math -march=native -Wall
 
 all: $(TARGET)
 
 $(TARGET): $(O_FILES)
-	gcc $^ -o $@
+	$(CC) $^ $(CXXFLAGS) -o $@
 
 %.o: %.c
-	gcc -c $< -O3 -o $@
+	$(CC) -c $< $(CXXFLAGS) -o $@
 
 .PHONY: clean
 clean:
@@ -17,7 +21,7 @@ clean:
 	rm -f report.txt
 
 .PHONY: report
-report: $(TARGET)
+report: clean $(TARGET)
 	lscpu | grep -E "name|Flags" > report.txt
 	cat /proc/cpuinfo | grep MHz >> report.txt
 	bash -c "{ time (./pi.out 3 100000000; ./pi.out 4 100000000) >>report.txt ; } 2>>report.txt"
