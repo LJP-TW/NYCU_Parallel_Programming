@@ -4,3 +4,9 @@ cpu MHz		: 1696.813
 cpu MHz		: 1696.813
 cpu MHz		: 1696.813
 cpu MHz		: 1696.813
+3.141338
+3.141728
+
+real	0m1.586s
+user	0m5.140s
+sys	0m0.008s

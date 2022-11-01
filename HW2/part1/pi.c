@@ -3,40 +3,21 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <pthread.h>
+#include "MT19937.h"
 
-#define U64_MAX 0xffffffffffffffff
+#define U32_MAX 0xffffffff
 
 typedef unsigned long long int u64;
 typedef long long int s64;
 
-int rand_fd;
-
 s64 hit;
 pthread_mutex_t hit_mutex = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
 
-void rand_init()
+// Mersenne Twister PRNG
+
+double get_rand(MT19937 *prng, double min, double max)
 {
-    rand_fd = open("/dev/urandom", O_RDONLY);
-
-    if (rand_fd < 0) {
-        fprintf(stderr, "Cannot open /dev/urandom!\n");
-        exit(0);
-    }
-}
-
-double get_rand(double min, double max)
-{
-    u64 num;
-    ssize_t ret;
-    
-    ret = read(rand_fd, &num, sizeof(num));
-
-    if (ret < 0) {
-        fprintf(stderr, "Cannot read from /dev/urandom!\n");
-        exit(0);
-    }
-
-    return min + ((double)num / U64_MAX) * (max - min);
+    return min + ((double)MT19937_rand(prng) / U32_MAX) * (max - min);
 }
 
 void add_hit(int value)
@@ -51,11 +32,12 @@ void add_hit(int value)
 void *tf_estimate_pi(void *_toss_cnt)
 {
     s64 toss_cnt = (s64)_toss_cnt;
-    s64 _hit;
+    s64 _hit = 0;
+    MT19937 *prng = MT19937_init();
     
     for (s64 i = 0; i < toss_cnt; i++) {
-        double x = get_rand(-1, 1);
-        double y = get_rand(-1, 1);
+        double x = get_rand(prng, -1, 1);
+        double y = get_rand(prng, -1, 1);
         double distance = x * x + y * y;
         if (distance <= 1)
             _hit++;
@@ -85,8 +67,6 @@ int main(int argc, char **argv)
 
     thread_cnt = atoi(argv[1]);
     toss_cnt = atoll(argv[2]);
-
-    rand_init();
 
     tid = (pthread_t *)malloc(sizeof(pthread_t) * thread_cnt);
     remain = toss_cnt;

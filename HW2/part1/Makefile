@@ -14,10 +14,10 @@ $(TARGET): $(O_FILES)
 .PHONY: clean
 clean:
 	rm -f *.o $(TARGET)
-	rm -f cpu.txt result.txt time.txt
+	rm -f report.txt
 
 .PHONY: report
 report: $(TARGET)
-	lscpu | grep -E "name|Flags" > cpu.txt
-	cat /proc/cpuinfo | grep MHz >> cpu.txt
-	bash -c "{ time (./pi.out 3 100000000; ./pi.out 4 100000000) >result.txt ; } 2>time.txt"
+	lscpu | grep -E "name|Flags" > report.txt
+	cat /proc/cpuinfo | grep MHz >> report.txt
+	bash -c "{ time (./pi.out 3 100000000; ./pi.out 4 100000000) >>report.txt ; } 2>>report.txt"
