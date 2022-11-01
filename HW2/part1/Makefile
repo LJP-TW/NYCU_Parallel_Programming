@@ -6,11 +6,12 @@ C_FILES = $(wildcard *.c)
 O_FILES = $(C_FILES:%.c=%.o)
 
 CXXFLAGS := -O3 -mavx2 -ffast-math -march=native -Wall
+LDFLAGS  := -lpthread
 
 all: $(TARGET)
 
 $(TARGET): $(O_FILES)
-	$(CC) $^ $(CXXFLAGS) -o $@
+	$(CC) $^ $(CXXFLAGS) -o $@ $(LDFLAGS)
 
 %.o: %.c
 	$(CC) -c $< $(CXXFLAGS) -o $@
