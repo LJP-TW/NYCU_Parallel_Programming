@@ -41,11 +41,11 @@ double get_rand(double min, double max)
 
 void add_hit(int value)
 {
-	pthread_mutex_lock(&hit_mutex);
-	
+    pthread_mutex_lock(&hit_mutex);
+    
     hit += value;
 
-	pthread_mutex_unlock(&hit_mutex);
+    pthread_mutex_unlock(&hit_mutex);
 }
 
 void *tf_estimate_pi(void *_toss_cnt)
