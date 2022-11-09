@@ -4,13 +4,13 @@ cpu MHz		: 1696.813
 cpu MHz		: 1696.813
 cpu MHz		: 1696.813
 cpu MHz		: 1696.813
-[mandelbrot serial]:		[533.714] ms
+[mandelbrot serial]:		[534.890] ms
 Wrote image file mandelbrot-serial.ppm
-[mandelbrot thread]:		[331.037] ms
+[mandelbrot thread]:		[89.633] ms
 Wrote image file mandelbrot-thread.ppm
-				(1.61x speedup from 3 threads)
-[mandelbrot serial]:		[537.079] ms
+				(5.97x speedup from 3 threads)
+[mandelbrot serial]:		[536.386] ms
 Wrote image file mandelbrot-serial.ppm
-[mandelbrot thread]:		[138.571] ms
+[mandelbrot thread]:		[60.321] ms
 Wrote image file mandelbrot-thread.ppm
-				(3.88x speedup from 4 threads)
+				(8.89x speedup from 4 threads)
