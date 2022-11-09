@@ -65,6 +65,7 @@ typedef struct
     int *output;
     int startRow;
     int totalRows;
+    double runtime;
 } WorkerArgs;
 
 static inline void vmandel(ve4sf *vc_re, ve4sf *vc_im, int count, ve4si *vout)
@@ -223,6 +224,7 @@ void workerThreadStart(WorkerArgs *const args)
     // Of course, you can copy mandelbrotSerial() to this file and 
     // modify it to pursue a better performance.
 
+    double startTime = CycleTimer::currentSeconds();
     mandelbrotSerialOptimize(
         args->x0,
         args->y0,
@@ -235,6 +237,9 @@ void workerThreadStart(WorkerArgs *const args)
         args->maxIterations,
         args->output
     );
+    double endTime = CycleTimer::currentSeconds();
+
+    args->runtime = endTime - startTime;
 }
 
 //
@@ -298,5 +303,11 @@ void mandelbrotThread(
     for (int i = 1; i < numThreads; i++)
     {
         workers[i].join();
+    }
+
+    printf("Finish Time Report:\n");
+    for (int i = 0; i < numThreads; i++) 
+    {
+        printf("Thread %d: %f\n", i, args[i].runtime);
     }
 }
