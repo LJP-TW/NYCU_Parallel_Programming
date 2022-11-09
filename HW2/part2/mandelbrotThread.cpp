@@ -42,8 +42,6 @@
 
 #include "CycleTimer.h"
 
-#define INT128_MAX ((__int128)-1)
-
 typedef int v4si __attribute__ ((vector_size (16)));
 typedef union {
     v4si v;
@@ -79,7 +77,6 @@ static inline void vmandel(ve4sf *vc_re, ve4sf *vc_im, int count, ve4si *vout)
   ve4sf v2f = { 2, 2, 2, 2 };
   ve4sf v4f = { 4, 4, 4, 4 };
   ve4si vmask = { 0, 0, 0, 0 };
-  // ve4si vtrue = { -1, -1, -1, -1 }; // all bits are 1
   
   vout->v = v0.v;
 
