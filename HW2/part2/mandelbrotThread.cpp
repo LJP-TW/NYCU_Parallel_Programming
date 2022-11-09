@@ -63,8 +63,8 @@ typedef struct
     unsigned int height;
     int maxIterations;
     int *output;
-    int startRow;
-    int totalRows;
+    int numThreads;
+    int threadId;
     double runtime;
 } WorkerArgs;
 
@@ -133,11 +133,10 @@ static inline int mandel(float c_re, float c_im, int count)
 // * x0, y0, x1, y1 describe the complex coordinates mapping
 //   into the image viewport.
 // * width, height describe the size of the output image
-// * startRow, totalRows describe how much of the image to compute
 static void mandelbrotSerialOptimize(
     float x0, float y0, float x1, float y1,
     int width, int height,
-    int startRow, int totalRows,
+    int numThreads, int threadId,
     int maxIterations,
     int output[])
 {
@@ -151,9 +150,7 @@ static void mandelbrotSerialOptimize(
   ve4sf v03 = { 0, 1, 2, 3 };
   ve4sf vwidth = { (float)width, (float)width, (float)width, (float)width };
 
-  int endRow = startRow + totalRows;
-
-  for (int j = startRow; j < endRow; ++j)
+  for (int j = threadId; j < height; j += numThreads)
   {
     ve4sf vj = { (float)j, (float)j, (float)j, (float)j };
 
@@ -232,8 +229,8 @@ void workerThreadStart(WorkerArgs *const args)
         args->y1,
         args->width,
         args->height,
-        args->startRow,
-        args->totalRows,
+        args->numThreads,
+        args->threadId,
         args->maxIterations,
         args->output
     );
@@ -254,8 +251,6 @@ void mandelbrotThread(
     int maxIterations, int output[])
 {
     static constexpr int MAX_THREADS = 32;
-    int remain;
-    int loading;
 
     if (numThreads > MAX_THREADS)
     {
@@ -266,9 +261,6 @@ void mandelbrotThread(
     // Creates thread objects that do not yet represent a thread.
     std::thread workers[MAX_THREADS];
     WorkerArgs args[MAX_THREADS];
-
-    remain = height;
-    loading = height / numThreads;
 
     for (int i = 0; i < numThreads; i++)
     {
@@ -283,10 +275,8 @@ void mandelbrotThread(
         args[i].height = height;
         args[i].maxIterations = maxIterations;
         args[i].output = output;
-        args[i].startRow = i * loading;
-        args[i].totalRows = (i != numThreads - 1) ? loading : remain;
-
-        remain -= loading;
+        args[i].numThreads = numThreads;
+        args[i].threadId = i;
     }
 
     // Spawn the worker threads.  Note that only numThreads-1 std::threads

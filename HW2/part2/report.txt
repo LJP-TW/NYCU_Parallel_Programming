@@ -4,13 +4,58 @@ cpu MHz		: 1696.813
 cpu MHz		: 1696.813
 cpu MHz		: 1696.813
 cpu MHz		: 1696.813
-[mandelbrot serial]:		[534.890] ms
+[mandelbrot serial]:		[543.537] ms
 Wrote image file mandelbrot-serial.ppm
-[mandelbrot thread]:		[89.633] ms
+Finish Time Report:
+Thread 0: 0.054451
+Thread 1: 0.058942
+Thread 2: 0.059356
+Finish Time Report:
+Thread 0: 0.050994
+Thread 1: 0.056074
+Thread 2: 0.055579
+Finish Time Report:
+Thread 0: 0.055361
+Thread 1: 0.052566
+Thread 2: 0.054997
+Finish Time Report:
+Thread 0: 0.054042
+Thread 1: 0.052141
+Thread 2: 0.055408
+Finish Time Report:
+Thread 0: 0.053885
+Thread 1: 0.050878
+Thread 2: 0.055124
+[mandelbrot thread]:		[55.478] ms
 Wrote image file mandelbrot-thread.ppm
-				(5.97x speedup from 3 threads)
-[mandelbrot serial]:		[536.386] ms
+				(9.80x speedup from 3 threads)
+[mandelbrot serial]:		[556.734] ms
 Wrote image file mandelbrot-serial.ppm
-[mandelbrot thread]:		[60.321] ms
+Finish Time Report:
+Thread 0: 0.044371
+Thread 1: 0.046961
+Thread 2: 0.043488
+Thread 3: 0.044690
+Finish Time Report:
+Thread 0: 0.042621
+Thread 1: 0.047911
+Thread 2: 0.043151
+Thread 3: 0.042625
+Finish Time Report:
+Thread 0: 0.040758
+Thread 1: 0.059524
+Thread 2: 0.046138
+Thread 3: 0.041580
+Finish Time Report:
+Thread 0: 0.042828
+Thread 1: 0.064692
+Thread 2: 0.043270
+Thread 3: 0.040743
+Finish Time Report:
+Thread 0: 0.038417
+Thread 1: 0.043711
+Thread 2: 0.046472
+Thread 3: 0.038204
+[mandelbrot thread]:		[47.160] ms
 Wrote image file mandelbrot-thread.ppm
-				(8.89x speedup from 4 threads)
+				(11.81x speedup from 4 threads)
