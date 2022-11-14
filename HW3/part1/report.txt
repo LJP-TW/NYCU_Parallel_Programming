@@ -1,0 +1,46 @@
+Model name:                      AMD Ryzen 7 PRO 4750U with Radeon Graphics
+Flags:                           fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl tsc_reliable nonstop_tsc cpuid extd_apicid tsc_known_freq pni pclmulqdq ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand hypervisor lahf_lm cmp_legacy extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw topoext ssbd ibpb vmmcall fsgsbase bmi1 avx2 smep bmi2 rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves clzero wbnoinvd arat umip rdpid overflow_recov succor
+cpu MHz		: 1696.813
+cpu MHz		: 1696.813
+cpu MHz		: 1696.813
+cpu MHz		: 1696.813
+
+CG start...
+
+ Size:       14000
+ Iterations:    15
+ Running with 4 threads
+
+
+   iteration           ||r||                 zeta
+        1       2.60650812147631E-13    19.9997581277040
+
+   iteration           ||r||                 zeta
+        1       2.60650812147631E-13    19.9997581277040
+        2       2.57531877367169E-15    17.1140495745506
+        3       2.59348789075185E-15    17.1296668946143
+        4       2.56262926848262E-15    17.1302113581193
+        5       2.51106135247005E-15    17.1302338856353
+        6       2.55819375820883E-15    17.1302349879482
+        7       2.54564770410681E-15    17.1302350498916
+        8       2.44940683285382E-15    17.1302350537510
+        9       2.48852359037289E-15    17.1302350540101
+       10       2.47715076108563E-15    17.1302350540284
+       11       2.49284410170029E-15    17.1302350540298
+       12       2.44437060612294E-15    17.1302350540299
+       13       2.47093619226119E-15    17.1302350540299
+       14       2.43816304501123E-15    17.1302350540299
+       15       2.42966732234484E-15    17.1302350540299
+ VERIFICATION SUCCESSFUL
+ Zeta is     1.7130235054030E+01
+ Error is    5.1226400332279E-14
+
+reference time : 1.712590s
+default time   : 2.310950s
+student time   : 2.435599s
+
+Your implementation should be faster than default - 0.1s!
+
+correctness : 0.000000
+performance : 0.000000
+total       : 0.000000

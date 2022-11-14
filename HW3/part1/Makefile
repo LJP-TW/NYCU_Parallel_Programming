@@ -29,3 +29,15 @@ clean:
 	- rm -f *.o *~
 	rm -f ${COMMON}/*.o
 	rm -f ${PROGRAMNAME} cg_grader
+	rm -f gmon.out
+
+profiling: CFLAGS += -pg
+profiling: CLINKFLAGS += -pg
+profiling: clean ${PROGRAMNAME}
+	./${PROGRAMNAME}
+	gprof ${PROGRAMNAME} gmon.out -b > profiling_result
+
+report: clean ${PROGRAMNAME}
+	lscpu | grep -E "name|Flags" > report.txt
+	cat /proc/cpuinfo | grep MHz >> report.txt
+	./cg_grader >> report.txt
