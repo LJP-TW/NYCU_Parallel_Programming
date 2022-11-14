@@ -31,11 +31,13 @@ clean:
 	rm -f ${PROGRAMNAME} cg_grader
 	rm -f gmon.out
 
-profiling: CFLAGS += -pg
-profiling: CLINKFLAGS += -pg
+profiling: CFLAGS += -pg -Wall
+profiling: CLINKFLAGS += -pg -Wall
 profiling: clean ${PROGRAMNAME}
 	./${PROGRAMNAME}
 	gprof ${PROGRAMNAME} gmon.out -b > profiling_result
+	sudo perf record -e cpu-cycles ./${PROGRAMNAME}
+# 	sudo perf report -F+period,srcline
 
 report: clean ${PROGRAMNAME}
 	lscpu | grep -E "name|Flags" > report.txt

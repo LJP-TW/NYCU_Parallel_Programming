@@ -35,12 +35,10 @@ CG start...
  Zeta is     1.7130235054030E+01
  Error is    5.1226400332279E-14
 
-reference time : 1.712590s
-default time   : 2.310950s
-student time   : 2.435599s
+reference time : 1.825870s
+default time   : 3.216315s
+student time   : 2.003389s
 
-Your implementation should be faster than default - 0.1s!
-
-correctness : 0.000000
-performance : 0.000000
-total       : 0.000000
+correctness : 6.000000
+performance : 24.000000
+total       : 30.000000

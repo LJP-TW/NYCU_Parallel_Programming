@@ -13,7 +13,7 @@ void conj_grad(int colidx[],
                double r[],
                double *rnorm)
 {
-    int j, k;
+    int j;
     int cgit, cgitmax = 25;
     double d, sum, rho, rho0, alpha, beta;
 
@@ -22,12 +22,36 @@ void conj_grad(int colidx[],
     //---------------------------------------------------------------------
     // Initialize the CG algorithm:
     //---------------------------------------------------------------------
-    for (j = 0; j < naa + 1; j++)
+    #pragma omp parallel sections
     {
-        q[j] = 0.0;
-        z[j] = 0.0;
-        r[j] = x[j];
-        p[j] = r[j];
+        #pragma omp section
+        {
+            for (int j = 0; j < naa + 1; j++)
+            {
+                q[j] = 0.0;
+            }
+        }
+        #pragma omp section
+        {
+            for (int j = 0; j < naa + 1; j++)
+            {
+                z[j] = 0.0;
+            }
+        }
+        #pragma omp section
+        {
+            for (int j = 0; j < naa + 1; j++)
+            {
+                r[j] = x[j];
+            }
+        }
+        #pragma omp section
+        {
+            for (int j = 0; j < naa + 1; j++)
+            {
+                p[j] = x[j];
+            }
+        }
     }
 
     //---------------------------------------------------------------------
@@ -57,10 +81,11 @@ void conj_grad(int colidx[],
         //       unrolled-by-two version is some 10% faster.
         //       The unrolled-by-8 version below is significantly faster
         //       on the Cray t3d - overall speed of code is 1.5 times faster.
-        for (j = 0; j < lastrow - firstrow + 1; j++)
+        #pragma omp parallel for
+        for (int j = 0; j < lastrow - firstrow + 1; j++)
         {
-            sum = 0.0;
-            for (k = rowstr[j]; k < rowstr[j + 1]; k++)
+            double sum = 0.0;
+            for (int k = rowstr[j]; k < rowstr[j + 1]; k++)
             {
                 sum = sum + a[k] * p[colidx[k]];
             }
@@ -126,10 +151,11 @@ void conj_grad(int colidx[],
     // The partition submatrix-vector multiply
     //---------------------------------------------------------------------
     sum = 0.0;
-    for (j = 0; j < lastrow - firstrow + 1; j++)
+    #pragma omp parallel for
+    for (int j = 0; j < lastrow - firstrow + 1; j++)
     {
-        d = 0.0;
-        for (k = rowstr[j]; k < rowstr[j + 1]; k++)
+        double d = 0.0;
+        for (int k = rowstr[j]; k < rowstr[j + 1]; k++)
         {
             d = d + a[k] * z[colidx[k]];
         }
@@ -302,9 +328,10 @@ void sparse(double a[],
     //---------------------------------------------------------------------
     // ... preload data pages
     //---------------------------------------------------------------------
-    for (j = 0; j < nrows; j++)
+    #pragma omp parallel for
+    for (int j = 0; j < nrows; j++)
     {
-        for (k = rowstr[j]; k < rowstr[j + 1]; k++)
+        for (int k = rowstr[j]; k < rowstr[j + 1]; k++)
         {
             a[k] = 0.0;
             colidx[k] = -1;
@@ -505,7 +532,7 @@ void vecset(int n, double v[], int iv[], int *nzv, int i, double val)
 
 void init(double *zeta)
 {
-    int i, j, k;
+    int i, j;
 
     firstrow = 0;
     lastrow = NA - 1;
@@ -540,9 +567,10 @@ void init(double *zeta)
     //      Shift the col index vals from actual (firstcol --> lastcol )
     //      to local, i.e., (0 --> lastcol-firstcol)
     //---------------------------------------------------------------------
-    for (j = 0; j < lastrow - firstrow + 1; j++)
+    #pragma omp parallel for
+    for (int j = 0; j < lastrow - firstrow + 1; j++)
     {
-        for (k = rowstr[j]; k < rowstr[j + 1]; k++)
+        for (int k = rowstr[j]; k < rowstr[j + 1]; k++)
         {
             colidx[k] = colidx[k] - firstcol;
         }

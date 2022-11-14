@@ -1,3 +1,7 @@
+# HW3
+HW3/part1/cg
+HW3/part1/cg_grader
+
 # HW2
 HW2/part1/pi.out
 HW2/part2/mandelbrot
@@ -5,6 +9,12 @@ HW2/part2/*.ppm
 
 # HW1
 HW1/part1/myexp
+
+# Profiling file
+gmon.out
+profiling_result
+perf.data
+perf.data.old
 
 # Common Extensions
 *.o
