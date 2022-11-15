@@ -59,7 +59,6 @@ void bitmap_release(bitmap_t *bitmap)
 
 inline void bitmap_clear(bitmap_t *bitmap)
 {
-    #pragma omp parallel for
     for (int i = 0; i < bitmap->size; ++i)
     {
         bitmap->bitmap[i] = 0;
@@ -248,12 +247,49 @@ void bfs_bottom_up(Graph graph, solution *sol)
     bitmap_release(&bitmap2);
 }
 
+inline void vertex_set_2_bitmap(vertex_set *list, bitmap_t *bitmap)
+{
+    bitmap_clear(bitmap);
+
+    #pragma omp parallel for
+    for (int i = 0; i < list->count; ++i)
+    {
+        bitmap_set(bitmap, list->vertices[i]);
+    }
+}
+
+inline void bitmap_2_vertex_set(bitmap_t *bitmap, vertex_set *list)
+{
+    vertex_set_clear(list);
+    for (int i = 0; i < bitmap->size; ++i)
+    {
+        uint64_t map = bitmap->bitmap[i];
+        int idx = 0;
+
+        // TODO: Optimization
+        while (map)
+        {
+            if (map & 1)
+            {
+                list->vertices[list->count++] = i * 64 + idx;
+            }
+            map >>= 1;
+            ++idx;
+        }
+    }
+}
+
 void bfs_hybrid(Graph graph, solution *sol)
 {
     // For PP students:
     //
     // You will need to implement the "hybrid" BFS here as
     // described in the handout.
+
+    int num_nodes = graph->num_nodes;
+    int num_edges = graph->num_edges;
+    int *outgoing_starts = graph->outgoing_starts;
+    int *incoming_starts = graph->incoming_starts;
 
     // Please see reference paper
     int mf;      // # of edges to check from the frontier
@@ -266,13 +302,13 @@ void bfs_hybrid(Graph graph, solution *sol)
 
     vertex_set list1;
     vertex_set list2;
-    vertex_set_init(&list1, graph->num_nodes);
-    vertex_set_init(&list2, graph->num_nodes);
+    vertex_set_init(&list1, num_nodes);
+    vertex_set_init(&list2, num_nodes);
 
     bitmap_t bitmap1;
     bitmap_t bitmap2;
-    bitmap_init(&bitmap1, graph->num_nodes);
-    bitmap_init(&bitmap2, graph->num_nodes);
+    bitmap_init(&bitmap1, num_nodes);
+    bitmap_init(&bitmap2, num_nodes);
 
     vertex_set *vfrontier = &list1;
     vertex_set *vnext = &list2;
@@ -281,14 +317,15 @@ void bfs_hybrid(Graph graph, solution *sol)
     bitmap_t *bnext = &bitmap2;
 
     // initialize all nodes to NOT_VISITED
-    for (int i = 0; i < graph->num_nodes; i++)
+    #pragma omp parallel for
+    for (int i = 0; i < num_nodes; i++)
         sol->distances[i] = NOT_VISITED_MARKER;
 
     // setup frontier with the root node
     vfrontier->vertices[vfrontier->count++] = ROOT_NODE_ID;
     sol->distances[ROOT_NODE_ID] = 0;
 
-    while (vfrontier->count != 0)
+    while (1)
     {
         if ((run_top_down && vfrontier->count == 0)
             || (!run_top_down && bfrontier->count == 0))
@@ -296,35 +333,13 @@ void bfs_hybrid(Graph graph, solution *sol)
 
         if (needConvert)
         {
-            printf("Convert!\n");
             if (run_top_down)
             {
-                // vfrontier -> bfrontier
-                bitmap_clear(bfrontier);
-                for (int i = 0; i < vfrontier->count; ++i)
-                {
-                    bitmap_set(bfrontier, vfrontier->vertices[i]);
-                }
+                vertex_set_2_bitmap(vfrontier, bfrontier);                
             }
             else
             {
-                // bfrontier -> vfrontier
-                vertex_set_clear(vfrontier);
-                for (int i = 0; i < bfrontier->size; ++i)
-                {
-                    uint64_t map = bfrontier->bitmap[i];
-                    int idx = 0;
-
-                    while (map)
-                    {
-                        if (map & 1)
-                        {
-                            vfrontier->vertices[vfrontier->count++] = i * 64 + idx;
-                        }
-                        map >>= 1;
-                        ++idx;
-                    }
-                }
+                bitmap_2_vertex_set(bfrontier, vfrontier);                
             }
 
             run_top_down = !run_top_down;
@@ -344,23 +359,23 @@ void bfs_hybrid(Graph graph, solution *sol)
             {
                 Vertex v = vnext->vertices[i];
 
-                int start_edge = graph->outgoing_starts[v];
-                int end_edge = (v == graph->num_nodes - 1)
-                                   ? graph->num_edges
-                                   : graph->outgoing_starts[v + 1];
+                int start_edge = outgoing_starts[v];
+                int end_edge = (v == num_nodes - 1)
+                                   ? num_edges
+                                   : outgoing_starts[v + 1];
 
                 mf += end_edge - start_edge;
             }
 
-            for (Vertex v = 0; v < graph->num_nodes; ++v)
+            for (Vertex v = 0; v < num_nodes; ++v)
             {
                 if (sol->distances[v] != NOT_VISITED_MARKER)
                     continue;
 
-                int start_edge = graph->incoming_starts[v];
-                int end_edge = (v == graph->num_nodes - 1)
-                               ? graph->num_edges
-                               : graph->incoming_starts[v + 1];
+                int start_edge = incoming_starts[v];
+                int end_edge = (v == num_nodes - 1)
+                               ? num_edges
+                               : incoming_starts[v + 1];
 
                 mu += end_edge - start_edge;
             }
@@ -372,6 +387,7 @@ void bfs_hybrid(Graph graph, solution *sol)
 
             if (mf * a > mu)
             {
+                // Do conversion later
                 needConvert = 1;
             }
         }
@@ -388,8 +404,9 @@ void bfs_hybrid(Graph graph, solution *sol)
             bfrontier = bnext;
             bnext = tmp;
 
-            if (b * nf < graph->num_nodes)
+            if (b * nf < num_nodes)
             {
+                // Do conversion later
                 needConvert = 1;
             }
         }
