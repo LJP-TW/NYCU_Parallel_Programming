@@ -1,9 +1,11 @@
+// Ref: https://parlab.eecs.berkeley.edu/sites/all/parlab/files/main.pdf
 #include "bfs.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <cstddef>
+#include <cstdint>
 #include <omp.h>
 
 #include "../common/CycleTimer.h"
@@ -22,6 +24,54 @@ void vertex_set_init(vertex_set *list, int count)
     list->max_vertices = count;
     list->vertices = (int *)malloc(sizeof(int) * list->max_vertices);
     vertex_set_clear(list);
+}
+
+/*
+ * bitmap[0]:  63 ~  0
+ * bitmap[1]: 127 ~ 64
+ * ...
+ */
+struct bitmap_t {
+  int count; // # of 1 bits in bitmap
+  int size; // bitmap size
+  uint64_t *bitmap;
+};
+
+inline void bitmap_clear(bitmap_t *bitmap);
+
+void bitmap_init(bitmap_t *bitmap, int bitcount)
+{
+    bitmap->size = (bitcount + 63) / 64;
+    bitmap->bitmap = (uint64_t *)malloc(sizeof(uint64_t) * bitmap->size);
+
+    bitmap_clear(bitmap);
+}
+
+void bitmap_release(bitmap_t *bitmap)
+{
+    free(bitmap->bitmap);
+}
+
+inline void bitmap_clear(bitmap_t *bitmap)
+{
+    #pragma omp parallel for
+    for (int i = 0; i < bitmap->size; ++i)
+    {
+        bitmap->bitmap[i] = 0;
+    }
+    bitmap->count = 0;
+}
+
+inline uint64_t bitmap_get(bitmap_t *bitmap, int bit)
+{
+    // (bitmap->bitmap[bit / 64] >> (bit & 63)) & 1
+    return (bitmap->bitmap[bit >> 6] >> (bit & 0x3f)) & 1;
+}
+
+inline void bitmap_set(bitmap_t *bitmap, int bit)
+{
+    __sync_fetch_and_add(&bitmap->count, 1);
+    __sync_fetch_and_or(&bitmap->bitmap[bit >> 6], (uint64_t)1 << (bit & 0x3f));
 }
 
 // Take one step of "top-down" BFS.  For each vertex on the frontier,
@@ -105,38 +155,40 @@ void bfs_top_down(Graph graph, solution *sol)
     }
 }
 
-int bottom_up_step(
+void bottom_up_step(
     Graph g,
-    int layer,
+    bitmap_t *frontier,
+    bitmap_t *next,
     int *distances)
 {
-    int updated = 0;
+    int num_edges = g->num_edges;
+    int num_nodes = g->num_nodes;
+    int *incoming_starts = g->incoming_starts;
+    Vertex *incoming_edges = g->incoming_edges;
 
     #pragma omp parallel for schedule(monotonic: dynamic, 1024)
-    for (int v = 0; v < g->num_nodes; ++v)
+    for (Vertex v = 0; v < num_nodes; ++v)
     {
         if (distances[v] != NOT_VISITED_MARKER)
             continue;
 
-        int start_edge = g->incoming_starts[v];
-        int end_edge = (v == g->num_nodes - 1)
-                       ? g->num_edges
-                       : g->incoming_starts[v + 1];
+        int start_edge = incoming_starts[v];
+        int end_edge = (v == num_nodes - 1)
+                       ? num_edges
+                       : incoming_starts[v + 1];
 
         for (int edgeidx = start_edge; edgeidx < end_edge; ++edgeidx)
         {
-            int parent_v = g->incoming_edges[edgeidx];
+            Vertex parent_v = incoming_edges[edgeidx];
 
-            if (distances[parent_v] == layer)
+            if (bitmap_get(frontier, parent_v))
             {
-                updated = 1;
-                distances[v] = layer + 1;
+                distances[v] = distances[parent_v] + 1;
+                bitmap_set(next, v);
                 break;
             }
         }
     }
-
-    return updated;
 }
 
 void bfs_bottom_up(Graph graph, solution *sol)
@@ -153,18 +205,35 @@ void bfs_bottom_up(Graph graph, solution *sol)
     // code by creating subroutine bottom_up_step() that is called in
     // each step of the BFS process.
     // initialize all nodes to NOT_VISITED
-    int layer = 0;
+    bitmap_t bitmap1;
+    bitmap_t bitmap2;
+    bitmap_init(&bitmap1, graph->num_nodes);
+    bitmap_init(&bitmap2, graph->num_nodes);
 
-    #pragma omp parallel for
+    bitmap_t *frontier = &bitmap1;
+    bitmap_t *next = &bitmap2;
+
     for (int i = 0; i < graph->num_nodes; i++)
         sol->distances[i] = NOT_VISITED_MARKER;
 
+    // setup frontier with the root node
+    bitmap_set(frontier, ROOT_NODE_ID);
     sol->distances[ROOT_NODE_ID] = 0;
 
-    while (bottom_up_step(graph, layer, sol->distances))
+    while (frontier->count != 0)
     {
-        ++layer;
+        bitmap_clear(next);
+
+        bottom_up_step(graph, frontier, next, sol->distances);
+
+        // swap pointers
+        bitmap_t *tmp = frontier;
+        frontier = next;
+        next = tmp;
     }
+
+    bitmap_release(&bitmap1);
+    bitmap_release(&bitmap2);
 }
 
 void bfs_hybrid(Graph graph, solution *sol)
@@ -173,40 +242,5 @@ void bfs_hybrid(Graph graph, solution *sol)
     //
     // You will need to implement the "hybrid" BFS here as
     // described in the handout.
-    vertex_set list1;
-    vertex_set list2;
-    vertex_set_init(&list1, graph->num_nodes);
-    vertex_set_init(&list2, graph->num_nodes);
-
-    vertex_set *frontier = &list1;
-    vertex_set *new_frontier = &list2;
-
-    int layer = 0;
-
-    // initialize all nodes to NOT_VISITED
-    for (int i = 0; i < graph->num_nodes; i++)
-        sol->distances[i] = NOT_VISITED_MARKER;
-
-    // setup frontier with the root node
-    frontier->vertices[frontier->count++] = ROOT_NODE_ID;
-    sol->distances[ROOT_NODE_ID] = 0;
-
-    while (frontier->count != 0 && layer < 2)
-    {
-        vertex_set_clear(new_frontier);
-
-        top_down_step(graph, frontier, new_frontier, sol->distances);
-
-        // swap pointers
-        vertex_set *tmp = frontier;
-        frontier = new_frontier;
-        new_frontier = tmp;
-
-        ++layer;
-    }
-
-    while (bottom_up_step(graph, layer, sol->distances))
-    {
-        ++layer;
-    }
+    bfs_top_down(graph, sol);
 }
