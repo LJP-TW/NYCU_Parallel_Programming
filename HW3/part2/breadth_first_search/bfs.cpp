@@ -33,7 +33,7 @@ void top_down_step(
     vertex_set *new_frontier,
     int *distances)
 {
-    #pragma omp parallel for
+    #pragma omp parallel for schedule(monotonic: dynamic, 1024)
     for (int i = 0; i < frontier->count; i++)
     {
 
@@ -112,7 +112,7 @@ int bottom_up_step(
 {
     int updated = 0;
 
-    #pragma omp parallel for (schedule)
+    #pragma omp parallel for schedule(monotonic: dynamic, 1024)
     for (int v = 0; v < g->num_nodes; ++v)
     {
         if (distances[v] != NOT_VISITED_MARKER)
