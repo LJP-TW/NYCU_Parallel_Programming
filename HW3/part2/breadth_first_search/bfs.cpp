@@ -26,6 +26,11 @@ void vertex_set_init(vertex_set *list, int count)
     vertex_set_clear(list);
 }
 
+void vertex_set_release(vertex_set *list)
+{
+    free(list->vertices);
+}
+
 /*
  * bitmap[0]:  63 ~  0
  * bitmap[1]: 127 ~ 64
@@ -153,6 +158,9 @@ void bfs_top_down(Graph graph, solution *sol)
         frontier = new_frontier;
         new_frontier = tmp;
     }
+
+    vertex_set_release(&list1);
+    vertex_set_release(&list2);    
 }
 
 void bottom_up_step(
