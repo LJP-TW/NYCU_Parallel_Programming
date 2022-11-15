@@ -76,8 +76,8 @@ inline uint64_t bitmap_get(bitmap_t *bitmap, int bit)
 
 inline void bitmap_set(bitmap_t *bitmap, int bit)
 {
-    __sync_fetch_and_add(&bitmap->count, 1);
-    __sync_fetch_and_or(&bitmap->bitmap[bit >> 6], (uint64_t)1 << (bit & 0x3f));
+    bitmap->count += 1;
+    bitmap->bitmap[bit >> 6] |= (uint64_t)1 << (bit & 0x3f);
 }
 
 // Take one step of "top-down" BFS.  For each vertex on the frontier,
@@ -188,6 +188,7 @@ void bottom_up_step(
     int num_nodes = g->num_nodes;
     int *incoming_starts = g->incoming_starts;
     Vertex *incoming_edges = g->incoming_edges;
+    std::vector<int> partial_next[omp_get_max_threads()];
 
     #pragma omp parallel for schedule(monotonic: dynamic, 1024)
     for (Vertex v = 0; v < num_nodes; ++v)
@@ -207,10 +208,19 @@ void bottom_up_step(
             if (bitmap_get(frontier, parent_v))
             {
                 distances[v] = distances[parent_v] + 1;
-                bitmap_set(next, v);
+                partial_next[omp_get_thread_num()].push_back(v);
                 break;
             }
         }
+    }
+
+    // Avoid lock
+    for (int i = 0; i < omp_get_max_threads(); ++i)
+    {
+        for (int v : partial_next[i])
+        {
+            bitmap_set(next, v);
+        }    
     }
 }
 
@@ -263,7 +273,6 @@ inline void vertex_set_2_bitmap(vertex_set *list, bitmap_t *bitmap)
 {
     bitmap_clear(bitmap);
 
-    #pragma omp parallel for
     for (int i = 0; i < list->count; ++i)
     {
         bitmap_set(bitmap, list->vertices[i]);

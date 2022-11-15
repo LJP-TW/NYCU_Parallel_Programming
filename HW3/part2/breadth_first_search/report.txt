@@ -4,86 +4,86 @@ Running with 4 threads
 Graph: grid1000x1000.graph
 
 Top down bfs
-ref_time: 0.0180855s
-stu_time: 0.019387s
+ref_time: 0.0143516s
+stu_time: 0.0193928s
 
 Bottom up bfs
-ref_time: 2.43493s
-stu_time: 2.31916s
+ref_time: 2.47926s
+stu_time: 2.21993s
 
 Hybrid bfs
-ref_time: 0.933407s
-stu_time: 2.07366s
+ref_time: 0.979655s
+stu_time: 2.30313s
 
 Graph: soc-livejournal1_68m.graph
 
 Top down bfs
-ref_time: 1.67841s
-stu_time: 1.197s
+ref_time: 0.438569s
+stu_time: 0.434153s
 
 Bottom up bfs
-ref_time: 0.416503s
-stu_time: 0.357026s
+ref_time: 0.323188s
+stu_time: 0.241875s
 
 Hybrid bfs
-ref_time: 0.184469s
-stu_time: 0.223907s
+ref_time: 0.180438s
+stu_time: 0.175113s
 
 Graph: com-orkut_117m.graph
 
 Top down bfs
-ref_time: 0.567491s
-stu_time: 0.439469s
+ref_time: 0.49701s
+stu_time: 0.438034s
 
 Bottom up bfs
-ref_time: 0.270453s
-stu_time: 0.235378s
+ref_time: 0.240753s
+stu_time: 0.195989s
 
 Hybrid bfs
-ref_time: 0.0673783s
-stu_time: 0.108768s
+ref_time: 0.0704465s
+stu_time: 0.0690811s
 
 Graph: random_500m.graph
 
 Top down bfs
-ref_time: 9.87593s
-stu_time: 10.2557s
+ref_time: 9.96551s
+stu_time: 9.7595s
 
 Bottom up bfs
-ref_time: 18.0153s
-stu_time: 14.6558s
+ref_time: 18.1475s
+stu_time: 13.7237s
 
 Hybrid bfs
-ref_time: 3.81693s
-stu_time: 3.72248s
+ref_time: 3.86134s
+stu_time: 3.94606s
 
 Graph: rmat_200m.graph
 
 Top down bfs
-ref_time: 4.13156s
-stu_time: 3.87089s
+ref_time: 3.98696s
+stu_time: 4.27238s
 
 Bottom up bfs
-ref_time: 3.70313s
-stu_time: 2.48133s
+ref_time: 3.51325s
+stu_time: 2.3172s
 
 Hybrid bfs
-ref_time: 1.76983s
-stu_time: 2.11156s
+ref_time: 1.71917s
+stu_time: 1.93002s
 
 
 --------------------------------------------------------------------------
 SCORES :                    |   Top-Down    |   Bott-Up    |    Hybrid    |
 --------------------------------------------------------------------------
-grid1000x1000.graph         |      2.00 / 2 |     3.00 / 3 |     1.50 / 3 |
+grid1000x1000.graph         |      2.00 / 2 |     3.00 / 3 |     1.35 / 3 |
 --------------------------------------------------------------------------
 soc-livejournal1_68m.graph  |      2.00 / 2 |     3.00 / 3 |     3.00 / 3 |
 --------------------------------------------------------------------------
-com-orkut_117m.graph        |      2.00 / 2 |     3.00 / 3 |     2.52 / 3 |
+com-orkut_117m.graph        |      2.00 / 2 |     3.00 / 3 |     3.00 / 3 |
 --------------------------------------------------------------------------
 random_500m.graph           |      6.00 / 6 |     7.00 / 7 |     7.00 / 7 |
 --------------------------------------------------------------------------
 rmat_200m.graph             |      6.00 / 6 |     7.00 / 7 |     7.00 / 7 |
 --------------------------------------------------------------------------
-TOTAL                                                      |  62.02 / 64 |
+TOTAL                                                      |  62.35 / 64 |
 --------------------------------------------------------------------------
