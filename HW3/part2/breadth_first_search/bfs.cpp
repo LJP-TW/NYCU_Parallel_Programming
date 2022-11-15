@@ -8,6 +8,8 @@
 #include <cstdint>
 #include <omp.h>
 
+#include <vector>
+
 #include "../common/CycleTimer.h"
 #include "../common/graph.h"
 
@@ -91,6 +93,7 @@ void top_down_step(
     int num_nodes = g->num_nodes;
     int *outgoing_starts = g->outgoing_starts;
     Vertex *outgoing_edges = g->outgoing_edges;
+    std::vector<int> partial_next[omp_get_max_threads()];
 
     #pragma omp parallel for
     for (int i = 0; i < frontier->count; i++)
@@ -110,10 +113,19 @@ void top_down_step(
             if (distances[child_v] == NOT_VISITED_MARKER)
             {
                 distances[child_v] = distances[v] + 1;
-                int index = __sync_fetch_and_add(&next->count, 1);
-                next->vertices[index] = child_v;
+                partial_next[omp_get_thread_num()].push_back(child_v);
             }
         }
+    }
+
+    // Avoid lock
+    for (int i = 0; i < omp_get_max_threads(); ++i)
+    {
+        for (int child_v : partial_next[i])
+        {
+            int index = next->count++;
+            next->vertices[index] = child_v;
+        }    
     }
 }
 
