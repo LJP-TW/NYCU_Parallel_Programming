@@ -254,5 +254,149 @@ void bfs_hybrid(Graph graph, solution *sol)
     //
     // You will need to implement the "hybrid" BFS here as
     // described in the handout.
-    bfs_top_down(graph, sol);
+
+    // Please see reference paper
+    int mf;      // # of edges to check from the frontier
+    int nf;      // # of vertices in the frontier
+    int mu;      // # of edges to check from unexplored vertices
+    int a = 14;  // tuning parameter
+    int b = 24;  // tuning parameter
+    int run_top_down = 1;
+    int needConvert = 0;
+
+    vertex_set list1;
+    vertex_set list2;
+    vertex_set_init(&list1, graph->num_nodes);
+    vertex_set_init(&list2, graph->num_nodes);
+
+    bitmap_t bitmap1;
+    bitmap_t bitmap2;
+    bitmap_init(&bitmap1, graph->num_nodes);
+    bitmap_init(&bitmap2, graph->num_nodes);
+
+    vertex_set *vfrontier = &list1;
+    vertex_set *vnext = &list2;
+
+    bitmap_t *bfrontier = &bitmap1;
+    bitmap_t *bnext = &bitmap2;
+
+    // initialize all nodes to NOT_VISITED
+    for (int i = 0; i < graph->num_nodes; i++)
+        sol->distances[i] = NOT_VISITED_MARKER;
+
+    // setup frontier with the root node
+    vfrontier->vertices[vfrontier->count++] = ROOT_NODE_ID;
+    sol->distances[ROOT_NODE_ID] = 0;
+
+    while (vfrontier->count != 0)
+    {
+        if ((run_top_down && vfrontier->count == 0)
+            || (!run_top_down && bfrontier->count == 0))
+            break;
+
+        if (needConvert)
+        {
+            printf("Convert!\n");
+            if (run_top_down)
+            {
+                // vfrontier -> bfrontier
+                bitmap_clear(bfrontier);
+                for (int i = 0; i < vfrontier->count; ++i)
+                {
+                    bitmap_set(bfrontier, vfrontier->vertices[i]);
+                }
+            }
+            else
+            {
+                // bfrontier -> vfrontier
+                vertex_set_clear(vfrontier);
+                for (int i = 0; i < bfrontier->size; ++i)
+                {
+                    uint64_t map = bfrontier->bitmap[i];
+                    int idx = 0;
+
+                    while (map)
+                    {
+                        if (map & 1)
+                        {
+                            vfrontier->vertices[vfrontier->count++] = i * 64 + idx;
+                        }
+                        map >>= 1;
+                        ++idx;
+                    }
+                }
+            }
+
+            run_top_down = !run_top_down;
+            needConvert = 0;
+        }
+
+        if (run_top_down)
+        {
+            vertex_set_clear(vnext);
+
+            top_down_step(graph, vfrontier, vnext, sol->distances);
+
+            mf = 0;
+            mu = 0;
+
+            for (int i = 0; i < vnext->count; i++)
+            {
+                Vertex v = vnext->vertices[i];
+
+                int start_edge = graph->outgoing_starts[v];
+                int end_edge = (v == graph->num_nodes - 1)
+                                   ? graph->num_edges
+                                   : graph->outgoing_starts[v + 1];
+
+                mf += end_edge - start_edge;
+            }
+
+            for (Vertex v = 0; v < graph->num_nodes; ++v)
+            {
+                if (sol->distances[v] != NOT_VISITED_MARKER)
+                    continue;
+
+                int start_edge = graph->incoming_starts[v];
+                int end_edge = (v == graph->num_nodes - 1)
+                               ? graph->num_edges
+                               : graph->incoming_starts[v + 1];
+
+                mu += end_edge - start_edge;
+            }
+
+            // swap pointers
+            vertex_set *tmp = vfrontier;
+            vfrontier = vnext;
+            vnext = tmp;
+
+            if (mf * a > mu)
+            {
+                needConvert = 1;
+            }
+        }
+        else
+        {
+            bitmap_clear(bnext);
+
+            bottom_up_step(graph, bfrontier, bnext, sol->distances);
+
+            nf = bnext->count;
+
+            // swap pointers
+            bitmap_t *tmp = bfrontier;
+            bfrontier = bnext;
+            bnext = tmp;
+
+            if (b * nf < graph->num_nodes)
+            {
+                needConvert = 1;
+            }
+        }
+    }
+
+    vertex_set_release(&list1);
+    vertex_set_release(&list2);
+    bitmap_release(&bitmap1);
+    bitmap_release(&bitmap2);
 }

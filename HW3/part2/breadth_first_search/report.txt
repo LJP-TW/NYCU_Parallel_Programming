@@ -4,86 +4,128 @@ Running with 4 threads
 Graph: grid1000x1000.graph
 
 Top down bfs
-ref_time: 0.0129895s
-stu_time: 0.0588529s
+ref_time: 0.0173633s
+stu_time: 0.0366627s
 
 Bottom up bfs
-ref_time: 2.76219s
-stu_time: 2.2521s
+ref_time: 2.75448s
+stu_time: 2.44056s
 
 Hybrid bfs
-ref_time: 0.912154s
-stu_time: 0.0380075s
+Convert!
+Convert!
+Convert!
+Convert!
+Convert!
+Convert!
+Convert!
+Convert!
+Convert!
+Convert!
+Convert!
+Convert!
+Convert!
+Convert!
+Convert!
+Convert!
+Convert!
+Convert!
+Convert!
+Convert!
+Convert!
+Convert!
+Convert!
+Convert!
+Convert!
+Convert!
+Convert!
+Convert!
+Convert!
+ref_time: 0.968078s
+stu_time: 2.20131s
 
 Graph: soc-livejournal1_68m.graph
 
 Top down bfs
-ref_time: 0.401701s
-stu_time: 0.503254s
+ref_time: 1.75385s
+stu_time: 0.660907s
 
 Bottom up bfs
-ref_time: 0.349907s
-stu_time: 0.250953s
+ref_time: 0.356606s
+stu_time: 0.228531s
 
 Hybrid bfs
-ref_time: 0.168535s
-stu_time: 0.496309s
+Convert!
+Convert!
+Convert!
+Convert!
+ref_time: 0.20695s
+stu_time: 0.205805s
 
 Graph: com-orkut_117m.graph
 
 Top down bfs
-ref_time: 0.43921s
-stu_time: 0.528146s
+ref_time: 0.454867s
+stu_time: 0.772489s
 
 Bottom up bfs
-ref_time: 0.248375s
-stu_time: 0.224285s
+ref_time: 0.252394s
+stu_time: 0.24961s
 
 Hybrid bfs
-ref_time: 0.0663196s
-stu_time: 0.53055s
+Convert!
+Convert!
+Convert!
+ref_time: 0.0685419s
+stu_time: 0.122588s
 
 Graph: random_500m.graph
 
 Top down bfs
-ref_time: 10.692s
-stu_time: 10.7506s
+ref_time: 9.52785s
+stu_time: 9.8387s
 
 Bottom up bfs
-ref_time: 18.5874s
-stu_time: 13.8758s
+ref_time: 16.8048s
+stu_time: 13.4181s
 
 Hybrid bfs
-ref_time: 3.82527s
-stu_time: 10.8133s
+Convert!
+Convert!
+ref_time: 3.75002s
+stu_time: 3.4809s
 
 Graph: rmat_200m.graph
 
 Top down bfs
-ref_time: 3.86393s
-stu_time: 4.46396s
+ref_time: 4.1661s
+stu_time: 4.31152s
 
 Bottom up bfs
-ref_time: 3.61871s
-stu_time: 2.71999s
+ref_time: 3.66117s
+stu_time: 2.17551s
 
 Hybrid bfs
-ref_time: 1.86108s
-stu_time: 4.55601s
+Convert!
+Convert!
+Convert!
+Convert!
+ref_time: 1.70788s
+stu_time: 1.91689s
 
 
 --------------------------------------------------------------------------
 SCORES :                    |   Top-Down    |   Bott-Up    |    Hybrid    |
 --------------------------------------------------------------------------
-grid1000x1000.graph         |      0.40 / 2 |     3.00 / 3 |     3.00 / 3 |
+grid1000x1000.graph         |      1.09 / 2 |     3.00 / 3 |     1.44 / 3 |
 --------------------------------------------------------------------------
-soc-livejournal1_68m.graph  |      2.00 / 2 |     3.00 / 3 |     0.84 / 3 |
+soc-livejournal1_68m.graph  |      2.00 / 2 |     3.00 / 3 |     3.00 / 3 |
 --------------------------------------------------------------------------
-com-orkut_117m.graph        |      2.00 / 2 |     3.00 / 3 |     0.60 / 3 |
+com-orkut_117m.graph        |      1.56 / 2 |     3.00 / 3 |     2.15 / 3 |
 --------------------------------------------------------------------------
-random_500m.graph           |      6.00 / 6 |     7.00 / 7 |     2.15 / 7 |
+random_500m.graph           |      6.00 / 6 |     7.00 / 7 |     7.00 / 7 |
 --------------------------------------------------------------------------
-rmat_200m.graph             |      6.00 / 6 |     7.00 / 7 |     2.92 / 7 |
+rmat_200m.graph             |      6.00 / 6 |     7.00 / 7 |     7.00 / 7 |
 --------------------------------------------------------------------------
-TOTAL                                                      |  48.91 / 64 |
+TOTAL                                                      |  60.24 / 64 |
 --------------------------------------------------------------------------
