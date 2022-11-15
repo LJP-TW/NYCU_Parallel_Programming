@@ -1,6 +1,8 @@
 # HW3
 HW3/part1/cg
 HW3/part1/cg_grader
+HW3/part2/breadth_first_search/bfs
+HW3/part2/breadth_first_search/bfs_grader
 
 # HW2
 HW2/part1/pi.out
@@ -19,3 +21,4 @@ perf.data.old
 # Common Extensions
 *.o
 *.zip
+*.graph

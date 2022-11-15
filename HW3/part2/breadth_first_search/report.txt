@@ -1,0 +1,89 @@
+Max system threads = 4
+Running with 4 threads
+
+Graph: grid1000x1000.graph
+
+Top down bfs
+ref_time: 0.0213316s
+stu_time: 0.062078s
+
+Bottom up bfs
+ref_time: 3.04124s
+stu_time: 2.34737s
+
+Hybrid bfs
+ref_time: 0.959295s
+stu_time: 2.33551s
+
+Graph: soc-livejournal1_68m.graph
+
+Top down bfs
+ref_time: 0.399383s
+stu_time: 0.542389s
+
+Bottom up bfs
+ref_time: 0.431683s
+stu_time: 0.911988s
+
+Hybrid bfs
+ref_time: 0.150154s
+stu_time: 0.436883s
+
+Graph: com-orkut_117m.graph
+
+Top down bfs
+ref_time: 0.497276s
+stu_time: 0.611729s
+
+Bottom up bfs
+ref_time: 0.246247s
+stu_time: 0.781277s
+
+Hybrid bfs
+ref_time: 0.0686079s
+stu_time: 0.370289s
+
+Graph: random_500m.graph
+
+Top down bfs
+ref_time: 10.661s
+stu_time: 10.4457s
+
+Bottom up bfs
+ref_time: 20.1821s
+stu_time: 23.9957s
+
+Hybrid bfs
+ref_time: 4.54374s
+stu_time: 18.633s
+
+Graph: rmat_200m.graph
+
+Top down bfs
+ref_time: 4.00045s
+stu_time: 4.67785s
+
+Bottom up bfs
+ref_time: 3.98508s
+stu_time: 4.91627s
+
+Hybrid bfs
+ref_time: 1.9834s
+stu_time: 2.78413s
+
+
+--------------------------------------------------------------------------
+SCORES :                    |   Top-Down    |   Bott-Up    |    Hybrid    |
+--------------------------------------------------------------------------
+grid1000x1000.graph         |      0.57 / 2 |     3.00 / 3 |     1.26 / 3 |
+--------------------------------------------------------------------------
+soc-livejournal1_68m.graph  |      2.00 / 2 |     1.64 / 3 |     0.86 / 3 |
+--------------------------------------------------------------------------
+com-orkut_117m.graph        |      2.00 / 2 |     0.69 / 3 |     0.60 / 3 |
+--------------------------------------------------------------------------
+random_500m.graph           |      6.00 / 6 |     7.00 / 7 |     1.40 / 7 |
+--------------------------------------------------------------------------
+rmat_200m.graph             |      6.00 / 6 |     7.00 / 7 |     7.00 / 7 |
+--------------------------------------------------------------------------
+TOTAL                                                      |  47.03 / 64 |
+--------------------------------------------------------------------------
