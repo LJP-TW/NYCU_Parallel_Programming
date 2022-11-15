@@ -81,34 +81,38 @@ inline void bitmap_set(bitmap_t *bitmap, int bit)
 
 // Take one step of "top-down" BFS.  For each vertex on the frontier,
 // follow all outgoing edges, and add all neighboring vertices to the
-// new_frontier.
+// next frontier.
 void top_down_step(
     Graph g,
     vertex_set *frontier,
-    vertex_set *new_frontier,
+    vertex_set *next,
     int *distances)
 {
-    #pragma omp parallel for schedule(monotonic: dynamic, 1024)
+    int num_edges = g->num_edges;
+    int num_nodes = g->num_nodes;
+    int *outgoing_starts = g->outgoing_starts;
+    Vertex *outgoing_edges = g->outgoing_edges;
+
+    #pragma omp parallel for
     for (int i = 0; i < frontier->count; i++)
     {
+        Vertex v = frontier->vertices[i];
 
-        int node = frontier->vertices[i];
-
-        int start_edge = g->outgoing_starts[node];
-        int end_edge = (node == g->num_nodes - 1)
-                           ? g->num_edges
-                           : g->outgoing_starts[node + 1];
+        int start_edge = outgoing_starts[v];
+        int end_edge = (v == num_nodes - 1)
+                           ? num_edges
+                           : outgoing_starts[v + 1];
 
         // attempt to add all neighbors to the new frontier
         for (int neighbor = start_edge; neighbor < end_edge; neighbor++)
         {
-            int outgoing = g->outgoing_edges[neighbor];
+            Vertex child_v = outgoing_edges[neighbor];
 
-            if (distances[outgoing] == NOT_VISITED_MARKER)
+            if (distances[child_v] == NOT_VISITED_MARKER)
             {
-                distances[outgoing] = distances[node] + 1;
-                int index = __sync_fetch_and_add(&new_frontier->count, 1);
-                new_frontier->vertices[index] = outgoing;
+                distances[child_v] = distances[v] + 1;
+                int index = __sync_fetch_and_add(&next->count, 1);
+                next->vertices[index] = child_v;
             }
         }
     }
@@ -127,7 +131,7 @@ void bfs_top_down(Graph graph, solution *sol)
     vertex_set_init(&list2, graph->num_nodes);
 
     vertex_set *frontier = &list1;
-    vertex_set *new_frontier = &list2;
+    vertex_set *next = &list2;
 
     // initialize all nodes to NOT_VISITED
     for (int i = 0; i < graph->num_nodes; i++)
@@ -144,9 +148,9 @@ void bfs_top_down(Graph graph, solution *sol)
         double start_time = CycleTimer::currentSeconds();
 #endif
 
-        vertex_set_clear(new_frontier);
+        vertex_set_clear(next);
 
-        top_down_step(graph, frontier, new_frontier, sol->distances);
+        top_down_step(graph, frontier, next, sol->distances);
 
 #ifdef VERBOSE
         double end_time = CycleTimer::currentSeconds();
@@ -155,8 +159,8 @@ void bfs_top_down(Graph graph, solution *sol)
 
         // swap pointers
         vertex_set *tmp = frontier;
-        frontier = new_frontier;
-        new_frontier = tmp;
+        frontier = next;
+        next = tmp;
     }
 
     vertex_set_release(&list1);
