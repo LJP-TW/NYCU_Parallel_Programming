@@ -315,8 +315,7 @@ void bfs_hybrid(Graph graph, solution *sol)
     // Please see reference paper
     int mf;      // # of edges to check from the frontier
     int nf;      // # of vertices in the frontier
-    int mu;      // # of edges to check from unexplored vertices
-    int a = 14;  // tuning parameter
+    int a = 10;  // tuning parameter
     int b = 24;  // tuning parameter
     int run_top_down = 1;
     int needConvert = 0;
@@ -374,7 +373,6 @@ void bfs_hybrid(Graph graph, solution *sol)
             top_down_step(graph, vfrontier, vnext, sol->distances);
 
             mf = 0;
-            mu = 0;
 
             for (int i = 0; i < vnext->count; i++)
             {
@@ -388,7 +386,10 @@ void bfs_hybrid(Graph graph, solution *sol)
                 mf += end_edge - start_edge;
             }
 
-            for (Vertex v = 0; v < num_nodes; ++v)
+            mf *= a;
+
+            // # of edges to check from unexplored vertices
+            for (Vertex v = 0; mf > 0 && v < num_nodes; ++v)
             {
                 if (sol->distances[v] != NOT_VISITED_MARKER)
                     continue;
@@ -398,7 +399,7 @@ void bfs_hybrid(Graph graph, solution *sol)
                                ? num_edges
                                : incoming_starts[v + 1];
 
-                mu += end_edge - start_edge;
+                mf -= (end_edge - start_edge);
             }
 
             // swap pointers
@@ -406,7 +407,7 @@ void bfs_hybrid(Graph graph, solution *sol)
             vfrontier = vnext;
             vnext = tmp;
 
-            if (mf * a > mu)
+            if (mf > 0)
             {
                 // Do conversion later
                 needConvert = 1;
