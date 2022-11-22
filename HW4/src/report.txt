@@ -1,22 +1,62 @@
 mpirun -np 8 --hostfile hosts_mpi.txt mpi_hello
+Hello world from processor 192-168-202-02, rank 1 out of 8 processors
+Hello world from processor 192-168-202-02, rank 5 out of 8 processors
+Hello world from processor 192-168-202-02, rank 0 out of 8 processors
 Hello world from processor 192-168-202-02, rank 2 out of 8 processors
 Hello world from processor 192-168-202-02, rank 3 out of 8 processors
 Hello world from processor 192-168-202-02, rank 4 out of 8 processors
-Hello world from processor 192-168-202-02, rank 5 out of 8 processors
-Hello world from processor 192-168-202-02, rank 6 out of 8 processors
 Hello world from processor 192-168-202-02, rank 7 out of 8 processors
-Hello world from processor 192-168-202-02, rank 0 out of 8 processors
-Hello world from processor 192-168-202-02, rank 1 out of 8 processors
+Hello world from processor 192-168-202-02, rank 6 out of 8 processors
 
 mpirun -np 10 --hostfile hosts_mpi.txt mpi_hello
-Hello world from processor 192-168-202-02, rank 7 out of 10 processors
-Hello world from processor 192-168-202-03, rank 9 out of 10 processors
-Hello world from processor 192-168-202-02, rank 4 out of 10 processors
-Hello world from processor 192-168-202-02, rank 2 out of 10 processors
-Hello world from processor 192-168-202-03, rank 8 out of 10 processors
-Hello world from processor 192-168-202-02, rank 3 out of 10 processors
-Hello world from processor 192-168-202-02, rank 5 out of 10 processors
 Hello world from processor 192-168-202-02, rank 0 out of 10 processors
-Hello world from processor 192-168-202-02, rank 6 out of 10 processors
+Hello world from processor 192-168-202-03, rank 9 out of 10 processors
 Hello world from processor 192-168-202-02, rank 1 out of 10 processors
+Hello world from processor 192-168-202-03, rank 8 out of 10 processors
+Hello world from processor 192-168-202-02, rank 7 out of 10 processors
+Hello world from processor 192-168-202-02, rank 2 out of 10 processors
+Hello world from processor 192-168-202-02, rank 6 out of 10 processors
+Hello world from processor 192-168-202-02, rank 3 out of 10 processors
+Hello world from processor 192-168-202-02, rank 4 out of 10 processors
+Hello world from processor 192-168-202-02, rank 5 out of 10 processors
+
+mpirun -np 2 --hostfile hosts_pi_block_linear.txt pi_block_linear 1000000000
+3.141586
+MPI running time: 10.450159 Seconds
+
+mpirun -np 2 --hostfile hosts_pi_block_linear.txt /HW4/ref/pi_block_linear 1000000000
+3.141596
+MPI running time: 10.060749 Seconds
+
+mpirun -np 4 --hostfile hosts_pi_block_linear.txt pi_block_linear 1000000000
+3.141588
+MPI running time: 5.590555 Seconds
+
+mpirun -np 4 --hostfile hosts_pi_block_linear.txt /HW4/ref/pi_block_linear 1000000000
+3.141614
+MPI running time: 5.546345 Seconds
+
+mpirun -np 8 --hostfile hosts_pi_block_linear.txt pi_block_linear 1000000000
+3.141602
+MPI running time: 2.836549 Seconds
+
+mpirun -np 8 --hostfile hosts_pi_block_linear.txt /HW4/ref/pi_block_linear 1000000000
+3.141601
+MPI running time: 2.915195 Seconds
+
+mpirun -np 12 --hostfile hosts_pi_block_linear.txt pi_block_linear 1000000000
+3.141597
+MPI running time: 1.863523 Seconds
+
+mpirun -np 12 --hostfile hosts_pi_block_linear.txt /HW4/ref/pi_block_linear 1000000000
+3.141588
+MPI running time: 2.003201 Seconds
+
+mpirun -np 16 --hostfile hosts_pi_block_linear.txt pi_block_linear 1000000000
+3.141588
+MPI running time: 1.420219 Seconds
+
+mpirun -np 16 --hostfile hosts_pi_block_linear.txt /HW4/ref/pi_block_linear 1000000000
+3.141598
+MPI running time: 1.564555 Seconds
 
