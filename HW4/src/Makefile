@@ -1,9 +1,10 @@
-TARGET := mpi_hello pi_block_linear pi_block_tree pi_nonblock_linear
+TARGET := mpi_hello pi_block_linear pi_block_tree pi_nonblock_linear pi_gather
 
 MPI_HELLO_C_FILES = hello.cc
 PI_BLOCK_LINEAR_SRC_FILES = pi_block_linear.cc
 PI_BLOCK_TREE_SRC_FILES = pi_block_tree.cc
 PI_NONBLOCK_LINEAR_SRC_FILES = pi_nonblock_linear.cc
+PI_GATHER_SRC_FILES = pi_gather.cc
 
 all: $(TARGET)
 #	Copy to all hosts
@@ -20,6 +21,9 @@ pi_block_tree: $(PI_BLOCK_TREE_SRC_FILES)
 	mpicxx $< -o $@
 
 pi_nonblock_linear: $(PI_NONBLOCK_LINEAR_SRC_FILES)
+	mpicxx $< -o $@
+
+pi_gather: $(PI_GATHER_SRC_FILES)
 	mpicxx $< -o $@
 
 .PHONY: clean
