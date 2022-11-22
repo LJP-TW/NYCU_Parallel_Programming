@@ -1,87 +1,68 @@
 mpirun -np 8 --hostfile hosts_mpi.txt mpi_hello
 Hello world from processor 192-168-202-02, rank 0 out of 8 processors
-Hello world from processor 192-168-202-02, rank 6 out of 8 processors
 Hello world from processor 192-168-202-02, rank 7 out of 8 processors
-Hello world from processor 192-168-202-02, rank 1 out of 8 processors
 Hello world from processor 192-168-202-02, rank 5 out of 8 processors
 Hello world from processor 192-168-202-02, rank 2 out of 8 processors
 Hello world from processor 192-168-202-02, rank 3 out of 8 processors
 Hello world from processor 192-168-202-02, rank 4 out of 8 processors
+Hello world from processor 192-168-202-02, rank 1 out of 8 processors
+Hello world from processor 192-168-202-02, rank 6 out of 8 processors
 
 mpirun -np 10 --hostfile hosts_mpi.txt mpi_hello
 Hello world from processor 192-168-202-02, rank 0 out of 10 processors
-Hello world from processor 192-168-202-03, rank 8 out of 10 processors
-Hello world from processor 192-168-202-02, rank 1 out of 10 processors
-Hello world from processor 192-168-202-03, rank 9 out of 10 processors
 Hello world from processor 192-168-202-02, rank 5 out of 10 processors
-Hello world from processor 192-168-202-02, rank 4 out of 10 processors
+Hello world from processor 192-168-202-03, rank 8 out of 10 processors
 Hello world from processor 192-168-202-02, rank 6 out of 10 processors
-Hello world from processor 192-168-202-02, rank 7 out of 10 processors
-Hello world from processor 192-168-202-02, rank 2 out of 10 processors
+Hello world from processor 192-168-202-03, rank 9 out of 10 processors
+Hello world from processor 192-168-202-02, rank 4 out of 10 processors
 Hello world from processor 192-168-202-02, rank 3 out of 10 processors
+Hello world from processor 192-168-202-02, rank 1 out of 10 processors
+Hello world from processor 192-168-202-02, rank 2 out of 10 processors
+Hello world from processor 192-168-202-02, rank 7 out of 10 processors
 
 mpirun -np 2 --hostfile hosts_part1.txt pi_block_linear 1000000000
-tf_estimate_pi running time: 10.385164 Seconds
-MPI_Recv running time: 0.000055 Seconds
-3.141595
-MPI running time: 10.385266 Seconds
+tf_estimate_pi running time: 10.428947 Seconds
+MPI_Recv running time: 0.118408 Seconds
+3.141606
+MPI running time: 10.547419 Seconds
 
 mpirun -np 2 --hostfile hosts_part1.txt /HW4/ref/pi_block_linear 1000000000
-3.141594
-MPI running time: 10.066963 Seconds
+3.141579
+MPI running time: 10.134231 Seconds
 
 mpirun -np 4 --hostfile hosts_part1.txt pi_block_linear 1000000000
-tf_estimate_pi running time: 5.590165 Seconds
-MPI_Recv running time: 0.073141 Seconds
-MPI_Recv running time: 0.000002 Seconds
+tf_estimate_pi running time: 5.586745 Seconds
+MPI_Recv running time: 0.000058 Seconds
+MPI_Recv running time: 0.000003 Seconds
 MPI_Recv running time: 0.000001 Seconds
-3.141589
-MPI running time: 5.663400 Seconds
+3.141582
+MPI running time: 5.586872 Seconds
 
 mpirun -np 4 --hostfile hosts_part1.txt /HW4/ref/pi_block_linear 1000000000
-3.141602
-MPI running time: 5.673474 Seconds
+3.141599
+MPI running time: 5.520163 Seconds
 
 mpirun -np 8 --hostfile hosts_part1.txt pi_block_linear 1000000000
-tf_estimate_pi running time: 2.780306 Seconds
-MPI_Recv running time: 0.000958 Seconds
-MPI_Recv running time: 0.038001 Seconds
-MPI_Recv running time: 0.000002 Seconds
-MPI_Recv running time: 0.000002 Seconds
+tf_estimate_pi running time: 2.802949 Seconds
+MPI_Recv running time: 0.000054 Seconds
 MPI_Recv running time: 0.000002 Seconds
 MPI_Recv running time: 0.000001 Seconds
+MPI_Recv running time: 0.001574 Seconds
+MPI_Recv running time: 0.000016 Seconds
+MPI_Recv running time: 0.000002 Seconds
 MPI_Recv running time: 0.000001 Seconds
-3.141575
-MPI running time: 2.819830 Seconds
+3.141596
+MPI running time: 2.804788 Seconds
 
 mpirun -np 8 --hostfile hosts_part1.txt /HW4/ref/pi_block_linear 1000000000
-3.141608
-MPI running time: 2.899688 Seconds
+3.141591
+MPI running time: 2.908760 Seconds
 
 mpirun -np 12 --hostfile hosts_part1.txt pi_block_linear 1000000000
-tf_estimate_pi running time: 1.857976 Seconds
-MPI_Recv running time: 0.027245 Seconds
-MPI_Recv running time: 0.000002 Seconds
-MPI_Recv running time: 0.000001 Seconds
-MPI_Recv running time: 0.000001 Seconds
-MPI_Recv running time: 0.000001 Seconds
-MPI_Recv running time: 0.000001 Seconds
-MPI_Recv running time: 0.000001 Seconds
-MPI_Recv running time: 0.000001 Seconds
-MPI_Recv running time: 0.000001 Seconds
-MPI_Recv running time: 0.000001 Seconds
-MPI_Recv running time: 0.000001 Seconds
-3.141612
-MPI running time: 1.885472 Seconds
-
-mpirun -np 12 --hostfile hosts_part1.txt /HW4/ref/pi_block_linear 1000000000
-3.141596
-MPI running time: 2.033972 Seconds
-
-mpirun -np 16 --hostfile hosts_part1.txt pi_block_linear 1000000000
-tf_estimate_pi running time: 1.385820 Seconds
-MPI_Recv running time: 0.009799 Seconds
-MPI_Recv running time: 0.002095 Seconds
+tf_estimate_pi running time: 1.855291 Seconds
+MPI_Recv running time: 0.009887 Seconds
+MPI_Recv running time: 0.000254 Seconds
+MPI_Recv running time: 0.005984 Seconds
 MPI_Recv running time: 0.000003 Seconds
 MPI_Recv running time: 0.000001 Seconds
 MPI_Recv running time: 0.000001 Seconds
@@ -90,127 +71,186 @@ MPI_Recv running time: 0.000001 Seconds
 MPI_Recv running time: 0.000001 Seconds
 MPI_Recv running time: 0.000001 Seconds
 MPI_Recv running time: 0.000001 Seconds
+3.141592
+MPI running time: 1.872127 Seconds
+
+mpirun -np 12 --hostfile hosts_part1.txt /HW4/ref/pi_block_linear 1000000000
+3.141589
+MPI running time: 2.014488 Seconds
+
+mpirun -np 16 --hostfile hosts_part1.txt pi_block_linear 1000000000
+tf_estimate_pi running time: 1.396959 Seconds
+MPI_Recv running time: 0.000039 Seconds
+MPI_Recv running time: 0.000005 Seconds
+MPI_Recv running time: 0.000001 Seconds
+MPI_Recv running time: 0.002491 Seconds
+MPI_Recv running time: 0.000002 Seconds
 MPI_Recv running time: 0.000001 Seconds
 MPI_Recv running time: 0.000001 Seconds
 MPI_Recv running time: 0.000001 Seconds
 MPI_Recv running time: 0.000001 Seconds
 MPI_Recv running time: 0.000001 Seconds
-3.141570
-MPI running time: 1.398131 Seconds
+MPI_Recv running time: 0.000001 Seconds
+MPI_Recv running time: 0.000001 Seconds
+MPI_Recv running time: 0.000001 Seconds
+MPI_Recv running time: 0.000001 Seconds
+MPI_Recv running time: 0.000002 Seconds
+3.141598
+MPI running time: 1.400054 Seconds
 
 mpirun -np 16 --hostfile hosts_part1.txt /HW4/ref/pi_block_linear 1000000000
-3.141604
-MPI running time: 1.575587 Seconds
+3.141581
+MPI running time: 1.624451 Seconds
 
 mpirun -np 2 --hostfile hosts_part1.txt pi_block_tree 1000000000
-3.141592
-MPI running time: 10.504942 Seconds
+3.141582
+MPI running time: 10.418309 Seconds
 
 mpirun -np 2 --hostfile hosts_part1.txt /HW4/ref/pi_block_tree 1000000000
-3.141581
-MPI running time: 10.134768 Seconds
+3.141593
+MPI running time: 10.082818 Seconds
 
 mpirun -np 4 --hostfile hosts_part1.txt pi_block_tree 1000000000
-3.141594
-MPI running time: 5.604549 Seconds
+3.141583
+MPI running time: 5.604869 Seconds
 
 mpirun -np 4 --hostfile hosts_part1.txt /HW4/ref/pi_block_tree 1000000000
-3.141591
-MPI running time: 5.631443 Seconds
+3.141596
+MPI running time: 5.518635 Seconds
 
 mpirun -np 8 --hostfile hosts_part1.txt pi_block_tree 1000000000
-3.141567
-MPI running time: 2.811595 Seconds
+3.141593
+MPI running time: 2.841008 Seconds
 
 mpirun -np 8 --hostfile hosts_part1.txt /HW4/ref/pi_block_tree 1000000000
-3.141592
-MPI running time: 2.900137 Seconds
+3.141597
+MPI running time: 2.911351 Seconds
 
 mpirun -np 16 --hostfile hosts_part1.txt pi_block_tree 1000000000
-3.141580
-MPI running time: 1.428426 Seconds
+3.141605
+MPI running time: 1.403845 Seconds
 
 mpirun -np 16 --hostfile hosts_part1.txt /HW4/ref/pi_block_tree 1000000000
-3.141585
-MPI running time: 1.594873 Seconds
+3.141603
+MPI running time: 1.574059 Seconds
 
 mpirun -np 2 --hostfile hosts_part1.txt pi_nonblock_linear 1000000000
-3.141586
-MPI running time: 10.427500 Seconds
+3.141569
+MPI running time: 10.505881 Seconds
 
 mpirun -np 2 --hostfile hosts_part1.txt /HW4/ref/pi_nonblock_linear 1000000000
-3.141591
-MPI running time: 10.124186 Seconds
+3.141588
+MPI running time: 10.094510 Seconds
 
 mpirun -np 4 --hostfile hosts_part1.txt pi_nonblock_linear 1000000000
-3.141569
-MPI running time: 5.663335 Seconds
+3.141600
+MPI running time: 5.585852 Seconds
 
 mpirun -np 4 --hostfile hosts_part1.txt /HW4/ref/pi_nonblock_linear 1000000000
-3.141606
-MPI running time: 5.514675 Seconds
+3.141597
+MPI running time: 5.637492 Seconds
 
 mpirun -np 8 --hostfile hosts_part1.txt pi_nonblock_linear 1000000000
-3.141590
-MPI running time: 2.826807 Seconds
+3.141599
+MPI running time: 2.791278 Seconds
 
 mpirun -np 8 --hostfile hosts_part1.txt /HW4/ref/pi_nonblock_linear 1000000000
-3.141585
-MPI running time: 2.878805 Seconds
+3.141591
+MPI running time: 2.925993 Seconds
 
 mpirun -np 12 --hostfile hosts_part1.txt pi_nonblock_linear 1000000000
-3.141579
-MPI running time: 1.863882 Seconds
+3.141582
+MPI running time: 1.868852 Seconds
 
 mpirun -np 12 --hostfile hosts_part1.txt /HW4/ref/pi_nonblock_linear 1000000000
-3.141563
-MPI running time: 2.072351 Seconds
+3.141626
+MPI running time: 2.031929 Seconds
 
 mpirun -np 16 --hostfile hosts_part1.txt pi_nonblock_linear 1000000000
-3.141589
-MPI running time: 1.396642 Seconds
+3.141583
+MPI running time: 1.399759 Seconds
 
 mpirun -np 16 --hostfile hosts_part1.txt /HW4/ref/pi_nonblock_linear 1000000000
 3.141593
-MPI running time: 1.572165 Seconds
+MPI running time: 1.569582 Seconds
 
 mpirun -np 2 --hostfile hosts_part1.txt pi_gather 1000000000
-3.141593
-MPI running time: 10.428093 Seconds
+3.141607
+MPI running time: 10.498479 Seconds
 
 mpirun -np 2 --hostfile hosts_part1.txt /HW4/ref/pi_gather 1000000000
-3.141595
-MPI running time: 10.223290 Seconds
+3.141584
+MPI running time: 10.096489 Seconds
 
 mpirun -np 4 --hostfile hosts_part1.txt pi_gather 1000000000
-3.141583
-MPI running time: 5.613956 Seconds
+3.141608
+MPI running time: 5.584955 Seconds
 
 mpirun -np 4 --hostfile hosts_part1.txt /HW4/ref/pi_gather 1000000000
-3.141608
-MPI running time: 5.520642 Seconds
+3.141605
+MPI running time: 5.522296 Seconds
 
 mpirun -np 8 --hostfile hosts_part1.txt pi_gather 1000000000
-3.141575
-MPI running time: 2.804065 Seconds
+3.141581
+MPI running time: 3.018195 Seconds
 
 mpirun -np 8 --hostfile hosts_part1.txt /HW4/ref/pi_gather 1000000000
-3.141589
-MPI running time: 2.883098 Seconds
+3.141599
+MPI running time: 2.937478 Seconds
 
 mpirun -np 12 --hostfile hosts_part1.txt pi_gather 1000000000
-3.141592
-MPI running time: 1.887384 Seconds
+3.141568
+MPI running time: 1.897203 Seconds
 
 mpirun -np 12 --hostfile hosts_part1.txt /HW4/ref/pi_gather 1000000000
-3.141598
-MPI running time: 2.056454 Seconds
+3.141592
+MPI running time: 2.126230 Seconds
 
 mpirun -np 16 --hostfile hosts_part1.txt pi_gather 1000000000
-3.141594
-MPI running time: 1.415867 Seconds
+3.141624
+MPI running time: 1.408182 Seconds
 
 mpirun -np 16 --hostfile hosts_part1.txt /HW4/ref/pi_gather 1000000000
-3.141587
-MPI running time: 1.620326 Seconds
+3.141586
+MPI running time: 1.577041 Seconds
+
+mpirun -np 2 --hostfile hosts_part1.txt pi_reduce 1000000000
+3.141596
+MPI running time: 10.488894 Seconds
+
+mpirun -np 2 --hostfile hosts_part1.txt /HW4/ref/pi_reduce 1000000000
+3.141592
+MPI running time: 10.164653 Seconds
+
+mpirun -np 4 --hostfile hosts_part1.txt pi_reduce 1000000000
+3.141590
+MPI running time: 5.648260 Seconds
+
+mpirun -np 4 --hostfile hosts_part1.txt /HW4/ref/pi_reduce 1000000000
+3.141580
+MPI running time: 5.562419 Seconds
+
+mpirun -np 8 --hostfile hosts_part1.txt pi_reduce 1000000000
+3.141594
+MPI running time: 2.793803 Seconds
+
+mpirun -np 8 --hostfile hosts_part1.txt /HW4/ref/pi_reduce 1000000000
+3.141582
+MPI running time: 2.928170 Seconds
+
+mpirun -np 12 --hostfile hosts_part1.txt pi_reduce 1000000000
+3.141602
+MPI running time: 1.862294 Seconds
+
+mpirun -np 12 --hostfile hosts_part1.txt /HW4/ref/pi_reduce 1000000000
+3.141615
+MPI running time: 2.018433 Seconds
+
+mpirun -np 16 --hostfile hosts_part1.txt pi_reduce 1000000000
+3.141586
+MPI running time: 1.416242 Seconds
+
+mpirun -np 16 --hostfile hosts_part1.txt /HW4/ref/pi_reduce 1000000000
+3.141608
+MPI running time: 1.587080 Seconds
 
