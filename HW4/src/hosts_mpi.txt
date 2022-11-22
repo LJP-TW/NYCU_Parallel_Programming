@@ -1,0 +1,2 @@
+pp2 slots=8
+pp3 slots=4

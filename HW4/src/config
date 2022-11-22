@@ -1,35 +1,31 @@
-Host pp1
-  HostName 192.168.108.72
-  User XXXXXXXX
-
 Host pp2
-  HostName 192.168.108.73
-  User XXXXXXXX
+  HostName 192.168.202.2
+  User 310555003
 
 Host pp3
-  HostName 192.168.108.74
-  User XXXXXXXX
+  HostName 192.168.202.3
+  User 310555003
 
 Host pp4
-  HostName 192.168.108.75
-  User XXXXXXXX
+  HostName 192.168.202.4
+  User 310555003
 
 Host pp5
-  HostName 192.168.108.76
-  User XXXXXXXX
+  HostName 192.168.202.5
+  User 310555003
 
 Host pp6
-  HostName 192.168.108.77
-  User XXXXXXXX
+  HostName 192.168.202.6
+  User 310555003
 
 Host pp7
-  HostName 192.168.108.78
-  User XXXXXXXX
+  HostName 192.168.202.7
+  User 310555003
 
 Host pp8
-  HostName 192.168.108.79
-  User XXXXXXXX
+  HostName 192.168.202.8
+  User 310555003
 
-Host pp9
-  HostName 192.168.108.80
-  User XXXXXXXX
+Host pp10
+  HostName 192.168.202.10
+  User 310555003
