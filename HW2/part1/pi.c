@@ -26,8 +26,6 @@ typedef long long int s64;
 s64 hit;
 pthread_mutex_t hit_mutex = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
 
-// Mersenne Twister PRNG
-
 static inline void rand_init(prng_state *prng)
 {
     u64 seed[4];
