@@ -9,7 +9,7 @@ PI_REDUCE_SRC_FILES = pi_reduce.cc
 
 all: $(TARGET)
 #	Copy to all hosts
-	parallel-scp -A -r -h hosts.txt ~/HW4 ~
+	parallel-scp -A -r -h ../setting/hosts.txt ~/HW4 ~
 
 mpi_hello: $(MPI_HELLO_C_FILES)
 # 	Compile
