@@ -9,7 +9,7 @@ $(TARGET): $(O_FILES)
 	mpicxx $^ -o $@
 
 %.o: %.cc
-	mpicxx -c $< -o $@
+	mpicxx -O3 -c $< -o $@
 
 .PHONY: clean
 clean:
