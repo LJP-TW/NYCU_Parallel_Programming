@@ -28,6 +28,10 @@ def test(np=8, hostfile='hosts_part2_4slots.txt', infile='./testdata/data1_1', a
 with open('report.txt', "w") as report:
     report.write('')
 
+test(1, 'hosts_part2_4slots.txt', './testdata/data0_1', './testdata/ans0_1')
+test(1, 'hosts_part2_4slots.txt', '/home/.grade/HW4/data-set/data1_1', '/home/.grade/HW4/data-set/ans1_1')
+test(1, 'hosts_part2_4slots.txt', '/home/.grade/HW4/data-set/data2_1', '/home/.grade/HW4/data-set/ans2_1')
+
 test(4, 'hosts_part2_4slots.txt', './testdata/data0_1', './testdata/ans0_1')
 test(4, 'hosts_part2_4slots.txt', '/home/.grade/HW4/data-set/data1_1', '/home/.grade/HW4/data-set/ans1_1')
 test(4, 'hosts_part2_4slots.txt', '/home/.grade/HW4/data-set/data2_1', '/home/.grade/HW4/data-set/ans2_1')

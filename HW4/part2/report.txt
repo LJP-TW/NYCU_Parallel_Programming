@@ -1,45 +1,54 @@
+mpirun -np 1 --hostfile hosts_part2_4slots.txt matmul < ./testdata/data0_1
+MPI running time: 0.000100 Seconds
+
+mpirun -np 1 --hostfile hosts_part2_4slots.txt matmul < /home/.grade/HW4/data-set/data1_1
+MPI running time: 0.309069 Seconds
+
+mpirun -np 1 --hostfile hosts_part2_4slots.txt matmul < /home/.grade/HW4/data-set/data2_1
+MPI running time: 10.526577 Seconds
+
 mpirun -np 4 --hostfile hosts_part2_4slots.txt matmul < ./testdata/data0_1
-MPI running time: 0.030810 Seconds
-MPI running time: 0.020765 Seconds
-MPI running time: 0.041074 Seconds
-MPI running time: 0.041113 Seconds
+MPI running time: 0.030785 Seconds
+MPI running time: 0.041387 Seconds
+MPI running time: 0.020738 Seconds
+MPI running time: 0.040994 Seconds
 
 mpirun -np 4 --hostfile hosts_part2_4slots.txt matmul < /home/.grade/HW4/data-set/data1_1
-MPI running time: 0.224903 Seconds
-MPI running time: 0.227796 Seconds
-MPI running time: 0.297587 Seconds
-MPI running time: 0.274343 Seconds
+MPI running time: 0.225431 Seconds
+MPI running time: 0.228208 Seconds
+MPI running time: 0.298933 Seconds
+MPI running time: 0.275015 Seconds
 
 mpirun -np 4 --hostfile hosts_part2_4slots.txt matmul < /home/.grade/HW4/data-set/data2_1
-MPI running time: 4.640504 Seconds
-MPI running time: 4.670927 Seconds
-MPI running time: 6.930539 Seconds
-MPI running time: 7.155698 Seconds
+MPI running time: 4.684255 Seconds
+MPI running time: 4.664671 Seconds
+MPI running time: 6.950775 Seconds
+MPI running time: 7.390621 Seconds
 
 mpirun -np 7 --hostfile hosts_part2_7slots.txt matmul < ./testdata/data0_1
-MPI running time: 0.020831 Seconds
-MPI running time: 0.070872 Seconds
-MPI running time: 0.040813 Seconds
-MPI running time: 0.030945 Seconds
-MPI running time: 0.070679 Seconds
-MPI running time: 0.051002 Seconds
-MPI running time: 0.061156 Seconds
+MPI running time: 0.020675 Seconds
+MPI running time: 0.040642 Seconds
+MPI running time: 0.033135 Seconds
+MPI running time: 0.052667 Seconds
+MPI running time: 0.063898 Seconds
+MPI running time: 0.070658 Seconds
+MPI running time: 0.070906 Seconds
 
 mpirun -np 7 --hostfile hosts_part2_7slots.txt matmul < /home/.grade/HW4/data-set/data1_1
-MPI running time: 0.269549 Seconds
-MPI running time: 0.266232 Seconds
-MPI running time: 0.267763 Seconds
-MPI running time: 0.304103 Seconds
-MPI running time: 0.279880 Seconds
-MPI running time: 0.271112 Seconds
-MPI running time: 0.279003 Seconds
+MPI running time: 0.307765 Seconds
+MPI running time: 0.309429 Seconds
+MPI running time: 0.306337 Seconds
+MPI running time: 0.318663 Seconds
+MPI running time: 0.311173 Seconds
+MPI running time: 0.317640 Seconds
+MPI running time: 0.372469 Seconds
 
 mpirun -np 7 --hostfile hosts_part2_7slots.txt matmul < /home/.grade/HW4/data-set/data2_1
-MPI running time: 4.430248 Seconds
-MPI running time: 4.442009 Seconds
-MPI running time: 4.454082 Seconds
-MPI running time: 5.541667 Seconds
-MPI running time: 5.530660 Seconds
-MPI running time: 5.383639 Seconds
-MPI running time: 5.772755 Seconds
+MPI running time: 4.522774 Seconds
+MPI running time: 4.534053 Seconds
+MPI running time: 5.629992 Seconds
+MPI running time: 4.510091 Seconds
+MPI running time: 5.616725 Seconds
+MPI running time: 5.420644 Seconds
+MPI running time: 5.863384 Seconds
 
