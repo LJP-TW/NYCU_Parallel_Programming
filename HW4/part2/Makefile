@@ -1,0 +1,22 @@
+TARGET := matmul
+
+CC_FILES = $(wildcard *.cc)
+O_FILES = $(CC_FILES:%.cc=%.o)
+
+all: $(TARGET)
+
+$(TARGET): $(O_FILES)
+	mpicxx $^ -o $@
+
+%.o: %.cc
+	mpicxx -c $< -o $@
+
+.PHONY: clean
+clean:
+	rm -f *.o $(TARGET)
+
+.PHONY: report
+report: all
+#	Copy to all hosts
+	parallel-scp -A -r -h ../setting/hosts.txt ~/HW4 ~
+	python3 ./test.py

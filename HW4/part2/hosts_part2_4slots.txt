@@ -1,0 +1,4 @@
+pp2 slots=1
+pp3 slots=1
+pp5 slots=1
+pp7 slots=1
