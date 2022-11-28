@@ -1,6 +1,8 @@
 #include <mpi.h>
 #include <cstdio>
 
+// #define DEBUG
+
 // *********************************************
 // ** ATTENTION: YOU CANNOT MODIFY THIS FILE. **
 // *********************************************
@@ -32,7 +34,17 @@ int main () {
     int n, m, l;
     int *a_mat, *b_mat;
 
+#ifdef DEBUG
+    int world_rank, world_size;
+#endif
+
     MPI_Init(NULL, NULL);
+
+#ifdef DEBUG
+    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+#endif
+
     double start_time = MPI_Wtime();
 
     construct_matrices(&n, &m, &l, &a_mat, &b_mat);
@@ -41,7 +53,12 @@ int main () {
 
     double end_time = MPI_Wtime();
     MPI_Finalize();
+
+#ifndef DEBUG
     printf("MPI running time: %lf Seconds\n", end_time - start_time);
+#else
+    printf("[%d] MPI running time: %lf Seconds\n", world_rank, end_time - start_time);
+#endif
 
     return 0;
 }

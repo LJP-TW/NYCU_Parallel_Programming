@@ -15,8 +15,11 @@ $(TARGET): $(O_FILES)
 clean:
 	rm -f *.o $(TARGET)
 
-.PHONY: report
-report: all
+.PHONY: sync
+sync: all
 #	Copy to all hosts
 	parallel-scp -A -r -h ../setting/hosts.txt ~/HW4 ~
+
+.PHONY: report
+report: sync
 	python3 ./test.py

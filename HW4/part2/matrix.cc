@@ -6,8 +6,21 @@ using namespace std;
 
 // #define DEBUG
 
-// Only valid for rank 0 process
 static int last_rank;
+
+// Ref: https://stackoverflow.com/a/466278
+static inline int upper_power_of_two(int v)
+{
+    // Fill all LSBs then add 1 to round up to next power of 2
+    v--;
+    v |= v >> 1;
+    v |= v >> 2;
+    v |= v >> 4;
+    v |= v >> 8;
+    v |= v >> 16;
+    v++;
+    return v;
+}
 
 // Read size of matrix_a and matrix_b (n, m, l) and whole data of matrixes from stdin
 //
@@ -47,6 +60,12 @@ void construct_matrices(int *n_ptr, int *m_ptr, int *l_ptr,
 
     if (world_rank == 0) {
         int remain_m, remain_slot, rank0_m, curr_m;
+        int *curr_ms;
+        int *part_ms;
+
+#ifdef DEBUG
+        start_time = MPI_Wtime();
+#endif
 
         cin >> n >> m >> l;
 
@@ -115,6 +134,8 @@ void construct_matrices(int *n_ptr, int *m_ptr, int *l_ptr,
         curr_m = 0;
         remain_m = m;
         remain_slot = world_size;
+        curr_ms = new int[world_size];
+        part_ms = new int[world_size];
 
         // rank 0
         rank0_m = (remain_m + remain_slot - 1) / remain_slot;
@@ -122,25 +143,42 @@ void construct_matrices(int *n_ptr, int *m_ptr, int *l_ptr,
         remain_m -= rank0_m;
         remain_slot -= 1;
 
+        curr_ms[0] = 0;
+        part_ms[0] = rank0_m;
+
         for (int rank = 1; rank < world_size; ++rank) {
             int part_m;
 
             part_m = (remain_m + remain_slot - 1) / remain_slot;
 
-            // Send
-            MPI_Send(&n, 1, MPI_INT, rank, 0, MPI_COMM_WORLD);
-            MPI_Send(&part_m, 1, MPI_INT, rank, 0, MPI_COMM_WORLD);
-            MPI_Send(&l, 1, MPI_INT, rank, 0, MPI_COMM_WORLD);
-
             if (part_m) {
-                MPI_Send(&a_mat[n * curr_m], n * part_m, MPI_INT, rank, 0, MPI_COMM_WORLD);
-                MPI_Send(&b_mat[curr_m * l], part_m * l, MPI_INT, rank, 0, MPI_COMM_WORLD);
                 last_rank = rank;
             }
+
+            curr_ms[rank] = curr_m;
+            part_ms[rank] = part_m;
 
             curr_m += part_m;
             remain_m -= part_m;
             remain_slot -= 1;
+        }
+
+        // Sync data
+        for (int rank = 1; rank < world_size; ++rank) {
+            int curr_m, part_m;
+
+            curr_m = curr_ms[rank];
+            part_m = part_ms[rank];
+
+            MPI_Send(&n, 1, MPI_INT, rank, 0, MPI_COMM_WORLD);
+            MPI_Send(&part_m, 1, MPI_INT, rank, 0, MPI_COMM_WORLD);
+            MPI_Send(&l, 1, MPI_INT, rank, 0, MPI_COMM_WORLD);
+            MPI_Send(&last_rank, 1, MPI_INT, rank, 0, MPI_COMM_WORLD);
+
+            if (part_m) {
+                MPI_Send(&a_mat[n * curr_m], n * part_m, MPI_INT, rank, 0, MPI_COMM_WORLD);
+                MPI_Send(&b_mat[curr_m * l], part_m * l, MPI_INT, rank, 0, MPI_COMM_WORLD);
+            }
         }
 
         *n_ptr = n;
@@ -148,6 +186,14 @@ void construct_matrices(int *n_ptr, int *m_ptr, int *l_ptr,
         *l_ptr = l;
         *a_mat_ptr = a_mat;
         *b_mat_ptr = b_mat;
+
+        delete [] part_ms;
+        delete [] curr_ms;
+
+#ifdef DEBUG
+        end_time = MPI_Wtime();
+        printf("construct_matrices(0) running time: %lf Seconds\n", end_time - start_time);
+#endif
 
         return;
     }
@@ -160,6 +206,7 @@ void construct_matrices(int *n_ptr, int *m_ptr, int *l_ptr,
     MPI_Recv(&n, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     MPI_Recv(&m, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     MPI_Recv(&l, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    MPI_Recv(&last_rank, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
     *n_ptr = n;
     *m_ptr = m;
@@ -196,9 +243,11 @@ void construct_matrices(int *n_ptr, int *m_ptr, int *l_ptr,
 void matrix_multiply(const int n, const int m, const int l,
                      const int *a_mat, const int *b_mat)
 {
-    int world_rank, world_size;
+    int world_rank, world_size, buddy_size, buddy_layer;
     int curr_start, remain_n, remain_slot;
     int *mul_mat, *_mul_mat;
+    int a_base, b_base;
+    std::string output;
 
     if (!m) {
         return;
@@ -212,7 +261,7 @@ void matrix_multiply(const int n, const int m, const int l,
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);
 
 #ifdef DEBUG
-    printf("[%d] n, m, l: %d %d %d\n", world_rank, n, m, l);
+    printf("[%d] n, m, l: %d %d %d %d\n", world_rank, n, m, l, last_rank);
     start_time = MPI_Wtime();
 #endif
 
@@ -221,12 +270,21 @@ void matrix_multiply(const int n, const int m, const int l,
 
     memset(mul_mat, 0, sizeof(int) * n * l);
 
+    a_base = 0;
+    b_base = 0;
     for (int _m = 0; _m < m; ++_m) {
+        int m_base = 0;
+
         for (int _n = 0; _n < n; ++_n) {
             for (int _l = 0; _l < l; ++_l) {
-                mul_mat[_n * l + _l] += a_mat[_m * n + _n] * b_mat[_m * l + _l];
+                mul_mat[m_base + _l] += a_mat[a_base] * b_mat[b_base + _l];
             }
+
+            m_base += l;
+            a_base += 1;
         }
+        
+        b_base += l;
     }
 
 #ifdef DEBUG
@@ -234,44 +292,109 @@ void matrix_multiply(const int n, const int m, const int l,
     printf("matrix_multiply running time: %lf Seconds\n", end_time - start_time);
 #endif
 
-    if (world_rank != 0) {
-        // Send
-        MPI_Send(mul_mat,
-                 n * l,
-                 MPI_INT,
-                 0,
-                 0,
-                 MPI_COMM_WORLD);
+    buddy_size = upper_power_of_two(world_size);
+    buddy_size >>= 1;
+    buddy_layer = 0;
 
+    while (buddy_size) {
+        int buddy_rank, is_buddy_master;
+
+        buddy_rank = world_rank ^ (1 << buddy_layer);
+        is_buddy_master = !(world_rank & (1 << buddy_layer));
+
+        if (buddy_rank > last_rank) {
+            // Skip
+            ++buddy_layer;
+            buddy_size >>= 1;
+
+            continue;
+        }
+
+        if (is_buddy_master) {
+            // Recv
+
+#ifdef DEBUG
+            start_time = MPI_Wtime();
+#endif
+
+            MPI_Recv(_mul_mat,
+                     n * l,
+                     MPI_INT,
+                     buddy_rank,
+                     0,
+                     MPI_COMM_WORLD,
+                     MPI_STATUS_IGNORE);
+
+            // Add
+
+#ifdef DEBUG
+            end_time = MPI_Wtime();
+            printf("[%d] Recv running time: %lf Seconds\n", world_rank, end_time - start_time);
+            start_time = MPI_Wtime();
+#endif
+
+            for (int _n = 0; _n < n; ++_n) {
+                for (int _l = 0; _l < l; ++_l) {
+                    mul_mat[_n * l + _l] += _mul_mat[_n * l + _l];
+                }
+            }
+
+#ifdef DEBUG
+            end_time = MPI_Wtime();
+            printf("[%d] Add running time: %lf Seconds\n", world_rank, end_time - start_time);
+#endif
+
+        } else {
+            // Send
+
+#ifdef DEBUG
+            start_time = MPI_Wtime();
+#endif
+
+            MPI_Send(mul_mat,
+                     n * l,
+                     MPI_INT,
+                     buddy_rank,
+                     0,
+                     MPI_COMM_WORLD);
+
+#ifdef DEBUG
+            end_time = MPI_Wtime();
+            printf("[%d] Send running time: %lf Seconds\n", world_rank, end_time - start_time);
+#endif
+
+            break;
+        }
+
+        ++buddy_layer;
+        buddy_size >>= 1;
+    }
+
+    if (world_rank != 0) {
         delete [] _mul_mat;
         delete [] mul_mat;
         return;
     }
 
-    for (int rank = 1; rank <= last_rank; ++rank) {
-        // Recv
-        MPI_Recv(_mul_mat,
-                 n * l,
-                 MPI_INT,
-                 rank,
-                 0,
-                 MPI_COMM_WORLD,
-                 MPI_STATUS_IGNORE);
-
-        for (int _n = 0; _n < n; ++_n) {
-            for (int _l = 0; _l < l; ++_l) {
-                mul_mat[_n * l + _l] += _mul_mat[_n * l + _l];
-            }
-        }
-    }
+#ifdef DEBUG
+    start_time = MPI_Wtime();
+#endif
 
     // Output
-    for (int _n = 0; _n < n; ++_n) {
-        for (int _l = 0; _l < l; ++_l) {
-            cout << mul_mat[_n * l + _l] << ' ';
+    for (int _n = 0, i = 0; _n < n; ++_n) {
+        for (int _l = 0; _l < l; ++_l, ++i) {
+            output += std::to_string(mul_mat[i]);
+            output += ' ';
         }
-        cout << endl;
+        output += '\n';
     }
+
+    cout << output;
+
+#ifdef DEBUG
+    end_time = MPI_Wtime();
+    printf("output running time: %lf Seconds\n", end_time - start_time);
+#endif
 
     delete [] _mul_mat;
     delete [] mul_mat;
