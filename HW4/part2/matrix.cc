@@ -178,19 +178,24 @@ void construct_matrices(int *n_ptr, int *m_ptr, int *l_ptr,
 
 void matrix_multiply_root(const int n, const int m, const int l,
                           const int *a_mat, const int *b_mat,
-                          const int world_size,
-                          int **mul_mat)
+                          const int world_size)
 {
-    int curr_n, waiting;
-    int *_mul_mat;
+    int curr_n, output_n, waiting;
+    int *mul_mat;
     MPI_Request *requests;
     int requests_cnt;
+    int *requests_ns;
+    int *ok_ns;
 
-    _mul_mat = new int[n * l];
+    mul_mat = new int[n * l];
     requests = new MPI_Request[world_size - 1];
+    requests_ns = new int[world_size - 1];
+    ok_ns = new int[n];
 
-    memset(_mul_mat, 0, sizeof(int) * n * l);
+    memset(mul_mat, 0, sizeof(int) * n * l);
+    memset(ok_ns, 0, sizeof(int) * n);
     curr_n = 0;
+    output_n = 0;
     waiting = 0;
     requests_cnt = 0;
 
@@ -201,13 +206,14 @@ void matrix_multiply_root(const int n, const int m, const int l,
          ++rank, ++curr_n) {
         MPI_Send(&matrix_cmd_calc, 1, MPI_INT, rank, 0, MPI_COMM_WORLD);
         MPI_Send(&a_mat[curr_n * m], m, MPI_INT, rank, 0, MPI_COMM_WORLD);
-        MPI_Irecv(&_mul_mat[curr_n * l],
+        MPI_Irecv(&mul_mat[curr_n * l],
                   l,
                   MPI_INT,
                   rank,
                   0,
                   MPI_COMM_WORLD,
                   &requests[rank - 1]);
+        requests_ns[rank - 1]  = curr_n;
         ++waiting;
         ++requests_cnt;
     }
@@ -217,6 +223,7 @@ void matrix_multiply_root(const int n, const int m, const int l,
         int *_c_mat;
         int anyok = 0;
         int done_rank = 0;
+        int has_output = 0;
 
         if (waiting) {
             // Check if any process sends result back
@@ -225,19 +232,22 @@ void matrix_multiply_root(const int n, const int m, const int l,
 
         while (anyok) {
             --waiting;
+            ++done_rank;
+
+            ok_ns[requests_ns[done_rank - 1]] = 1;
 
             if (curr_n < n) {
                 // Send one row of matrix A
-                ++done_rank;                
                 MPI_Send(&matrix_cmd_calc, 1, MPI_INT, done_rank, 0, MPI_COMM_WORLD);
                 MPI_Send(&a_mat[curr_n * m], m, MPI_INT, done_rank, 0, MPI_COMM_WORLD);
-                MPI_Irecv(&_mul_mat[curr_n * l],
+                MPI_Irecv(&mul_mat[curr_n * l],
                           l,
                           MPI_INT,
                           done_rank,
                           0,
                           MPI_COMM_WORLD,
                           &requests[done_rank - 1]);
+                requests_ns[done_rank - 1]  = curr_n;
 
                 ++waiting;
                 ++curr_n;
@@ -247,14 +257,34 @@ void matrix_multiply_root(const int n, const int m, const int l,
             MPI_Testany(requests_cnt, requests, &done_rank, &anyok, MPI_STATUS_IGNORE);
         }
 
+        // Output
+        while (output_n < n && ok_ns[output_n]) {
+            std::string output;
+
+            for (int _l = 0, i = output_n * l; _l < l; ++_l, ++i) {
+                output += std::to_string(mul_mat[i]);
+                output += ' ';
+            }
+            output += '\n';
+
+            cout << output;
+
+            ++output_n;
+            has_output = 1;
+        }
+
         if (curr_n >= n) {
             break;
+        }
+
+        if (has_output) {
+            continue;
         }
 
         // Calculate one row of result in root node
 
         _a_mat = &a_mat[curr_n * m];
-        _c_mat = &_mul_mat[curr_n * l];
+        _c_mat = &mul_mat[curr_n * l];
 
         for (int _l = 0; _l < l; ++_l) {
             const int *_b_mat;
@@ -269,6 +299,7 @@ void matrix_multiply_root(const int n, const int m, const int l,
             _c_mat[_l] = sum;
         }
 
+        ok_ns[curr_n] = 1;
         ++curr_n;
     }
 
@@ -280,6 +311,8 @@ void matrix_multiply_root(const int n, const int m, const int l,
         MPI_Testany(requests_cnt, requests, &done_rank, &anyok, MPI_STATUS_IGNORE);
 
         if (anyok) {
+            ++done_rank;
+            ok_ns[requests_ns[done_rank - 1]] = 1;
             --waiting;
         }
     }
@@ -289,9 +322,25 @@ void matrix_multiply_root(const int n, const int m, const int l,
         MPI_Send(&matrix_cmd_end, 1, MPI_INT, rank, 0, MPI_COMM_WORLD);
     }
 
-    *mul_mat = _mul_mat;
+    // Output
+    while (output_n < n) {
+        std::string output;
 
+        for (int _l = 0, i = output_n * l; _l < l; ++_l, ++i) {
+            output += std::to_string(mul_mat[i]);
+            output += ' ';
+        }
+        output += '\n';
+
+        cout << output;
+
+        ++output_n;
+    }
+
+    delete [] ok_ns;
+    delete [] requests_ns;
     delete [] requests;
+    delete [] mul_mat;
 }
 
 void matrix_multiply_nonroot(const int m, const int l,
@@ -310,6 +359,7 @@ void matrix_multiply_nonroot(const int m, const int l,
 
         // Is terminating signal?
         if (cmd == matrix_cmd_end) {
+            // printf("matrix_cmd_end\n");
             break;
         }
 
@@ -347,8 +397,6 @@ void matrix_multiply(const int n, const int m, const int l,
                      const int *a_mat, const int *b_mat)
 {
     int world_rank, world_size;
-    int *mul_mat;
-    std::string output;
 
 #ifdef DEBUG
     double start_time, end_time;
@@ -382,33 +430,13 @@ void matrix_multiply(const int n, const int m, const int l,
     start_time = MPI_Wtime();
 #endif
 
-    matrix_multiply_root(n, m, l, a_mat, b_mat, world_size, &mul_mat);
-        
-    // Output
+    matrix_multiply_root(n, m, l, a_mat, b_mat, world_size);
 
 #ifdef DEBUG
     end_time = MPI_Wtime();
     printf("matrix_multiply_root running time: %lf Seconds\n", end_time - start_time);
-    start_time = MPI_Wtime();
 #endif
 
-    // Output
-    for (int _n = 0, i = 0; _n < n; ++_n) {
-        for (int _l = 0; _l < l; ++_l, ++i) {
-            output += std::to_string(mul_mat[i]);
-            output += ' ';
-        }
-        output += '\n';
-    }
-
-    cout << output;
-
-#ifdef DEBUG
-    end_time = MPI_Wtime();
-    printf("output running time: %lf Seconds\n", end_time - start_time);
-#endif
-
-    delete [] mul_mat;
 }
 
 // Remember to release your allocated memory
