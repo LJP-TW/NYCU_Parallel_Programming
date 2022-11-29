@@ -359,7 +359,6 @@ void matrix_multiply_nonroot(const int m, const int l,
 
         // Is terminating signal?
         if (cmd == matrix_cmd_end) {
-            // printf("matrix_cmd_end\n");
             break;
         }
 
