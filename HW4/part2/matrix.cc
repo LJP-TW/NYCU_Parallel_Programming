@@ -58,7 +58,7 @@ void construct_matrices(int *n_ptr, int *m_ptr, int *l_ptr,
                         int **a_mat_ptr, int **b_mat_ptr)
 {
     int n, m, l;
-    int *a_mat, *b_mat;
+    int *a_mat = NULL, *b_mat = NULL;
     int world_rank, world_size;
     int buddy_size, buddy_layer;
 
@@ -72,10 +72,6 @@ void construct_matrices(int *n_ptr, int *m_ptr, int *l_ptr,
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);
 
     if (world_rank == 0) {
-        int remain_m, remain_slot, rank0_m, curr_m;
-        int *curr_ms;
-        int *part_ms;
-
         cin >> n >> m >> l;
 
         a_mat = new int[n * m];
